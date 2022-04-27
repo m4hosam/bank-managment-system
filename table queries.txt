@@ -1,0 +1,40 @@
+create table customer(
+	id INT,
+	firstN VARCHAR(20),
+	lastN VARCHAR(20),
+	email VARCHAR(30),
+	phone VARCHAR(30),
+	TC VARCHAR(20),
+	Adress VARCHAR(30),
+	PRIMARY KEY (id)
+);
+
+create table account(
+	acc_id INT,
+	currency VARCHAR(10),
+	balance INT,
+	PRIMARY KEY (acc_id)
+);
+
+create table userAccounts(
+	acc_id INT,
+	cus_id INT,
+	FOREIGN KEY(acc_id) REFERENCES account(acc_id),
+	FOREIGN KEY(cus_id) REFERENCES customer(id),
+);
+
+create table transactions(
+	trans_no INT IDENTITY(1,1),
+	trans_date DATETIME,
+	src_id INT,
+	rsv_id INT,
+	trans_type VARCHAR(20),
+	total INT,
+	cus_id INT,
+	PRIMARY KEY(trans_no),
+	FOREIGN KEY(src_id) REFERENCES account(acc_id),
+	FOREIGN KEY(rsv_id) REFERENCES account(acc_id),
+	FOREIGN KEY(cus_id) REFERENCES customer(id),
+);
+
+
