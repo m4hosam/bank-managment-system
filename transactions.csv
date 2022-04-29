@@ -1,0 +1,7 @@
+trans_no,trans_date,src_id,rsv_id,trans_type,total,cus_id
+1,2022-01-28 21:33:18,901,902,money transfer,100,
+2,2022-01-03 05:32:58,902,,withdraw,900,302
+3,2022-01-12 23:04:17,,903,deposit,500,301
+4,2022-01-03 18:43:22,902,901,money transfer,400,
+5,2022-04-24 20:58:14,,903,deposit,600,301
+6,2022-04-24 20:58:14,904,903,money transfer,400,
