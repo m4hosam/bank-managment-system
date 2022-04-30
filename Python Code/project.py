@@ -1,41 +1,58 @@
-from classes import Customer
-import pyodbc
+from SQLconnection import cursor
+from classes import Account, Customer
 
-connection = pyodbc.connect('Driver={SQL Server};'
-                            'Server=DESKTOP-5CILQ1E;'
-                            'Database=Bank;'
-                            'Trusted_Connection=yes;'
-                            )
 
-cursor = connection.cursor()
-cursor.execute('SELECT * FROM customer')
+customerId = input("Insert Customer Id: ")
+cursor.execute('SELECT * FROM customer WHERE customer.id = ?', customerId)
 rows = cursor.fetchall()
 
-for row in rows:
-    print(Customer(row).first_name)
-    print(Customer(row).last_name)
+if(not rows):
+    print("Customer not Found")
+else:
+    currentCustomer = Customer(rows[0])
 
-# if row:
-#     customer1 = Customer(row)
-
-# print(cursor)
-
-# customer1 = Customer()
-
-# print(customer1.first_name)
-# all these functions can be in a customer class (idea)
+print(currentCustomer)
 
 
 def ATM_operations(type):
     # list all accounts that belong to the user ---(Query)
-    amount = input("Amount: ")
+    cursor.execute('SELECT account.acc_id, account.currency, account.balance FROM account, userAccounts WHERE userAccounts.acc_id = account.acc_id AND userAccounts.cus_id = ?', customerId)
+    rows = cursor.fetchall()
+    accounts = []
+    accountIds = []
+
+    for row in rows:
+        print(row)
+        accounts.append(Account(row))
+        accountIds.append(row.acc_id)
+
     account_no = input("Account Number: ")
+    # Type is either Withdraw or Deposit
+    if(type == "Withdraw"):
+        amount = input("Withdraw amount: ")
+    elif(type == "Deposit"):
+        amount = input("Deposit amount: ")
+
     # Currency Selection list interface
     # Select that account from database and get the balance ---(Query)
-    # Type is either Withdraw or Deposit
+    print(accountIds)
+    if int(account_no) in accountIds:
+        print("Exists")
+    else:
+        print("Invaild input")
+
+    if(int(amount) < 0):
+        print("Error Can't Withdraw negative")
+    # else:
+        # cursor.execute('Update', account_no, )
+
+    print("Withdraw Completed")
     # if balance - amount is negative (Can't Withdraw)
     # Else: Change the database balance into the new value
     # Message Withdraw completed
+
+
+ATM_operations("Withdraw")
 
 
 def open_account():
@@ -139,25 +156,25 @@ def addNewCustomers():
     # append the customer id to the responsible clerk ----(Clerk Table)
 
 
-print("1-Withdraw\n"
-      "2-Deposit\n"
-      "3-Open account\n"
-      "4-Delete account\n"
-      "5-Update My Information\n"
-      "6-Money Transfer\n"
-      "7-Pay loan\n"
-      "8-request loan\n"
-      "9-Monthly Summery\n"
-      "10-Exchange Rate Panel\n"
-      "11-My Accounts\n")
+# print("1-Withdraw\n"
+#       "2-Deposit\n"
+#       "3-Open account\n"
+#       "4-Delete account\n"
+#       "5-Update My Information\n"
+#       "6-Money Transfer\n"
+#       "7-Pay loan\n"
+#       "8-request loan\n"
+#       "9-Monthly Summery\n"
+#       "10-Exchange Rate Panel\n"
+#       "11-My Accounts\n")
 
-print("1-income-expense-profit-total balance\n"
-      "2-add new currency\n"
-      "3-update currency\n"
-      "4-Update the salary of the clerks\n"
-      "5-Update interest Rate\n"
-      "6-Add new Customers\n"
-      "7-Advance one Month---As a result of this progress -> salaries should be paid,"
-      " income-expenditure statuses should be updated and customers'"
-      " debts for the next month should be reflected to them.\n"
-      "8-view all transactions (How many??)\n")
+# print("1-income-expense-profit-total balance\n"
+#       "2-add new currency\n"
+#       "3-update currency\n"
+#       "4-Update the salary of the clerks\n"
+#       "5-Update interest Rate\n"
+#       "6-Add new Customers\n"
+#       "7-Advance one Month---As a result of this progress -> salaries should be paid,"
+#       " income-expenditure statuses should be updated and customers'"
+#       " debts for the next month should be reflected to them.\n"
+#       "8-view all transactions (How many??)\n")

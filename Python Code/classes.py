@@ -8,9 +8,15 @@ class Customer:
         self.TC = object.TC
         self.address = object.Adress
 
+    def __str__(self):
+        return f"----\n({self.customer_id}, {self.first_name},{self.last_name}, {self.email}, {self.phone}, {self.TC}, {self.address})\n---"
+
 
 class Account:
-    def __init__(self, acc_id, currency, balance):
-        self.acc_id = acc_id
-        self.currency = currency
-        self.balance = balance
+    def __init__(self, account):
+        self.account_id = account.acc_id
+        self.currency = account.currency
+        self.balance = account.balance
+
+    def __str__(self):
+        return f"----\n({self.account_id}, {self.currency},{self.balance})\n----"
