@@ -1,12 +1,12 @@
 class Customer:
-    def __init__(self, id, firstName, lastName, email, TC, address, phone):
-        self.id = id
-        self.fistName = firstName
-        self.lastName = lastName
-        self.email = email
-        self.TC = TC
-        self.address = address
-        self.phone = phone
+    def __init__(self, object):
+        self.customer_id = object.id
+        self.first_name = object.firstN
+        self.last_name = object.lastN
+        self.email = object.email
+        self.phone = object.phone
+        self.TC = object.TC
+        self.address = object.Adress
 
 
 class Account:

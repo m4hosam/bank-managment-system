@@ -1,6 +1,28 @@
 from classes import Customer
+import pyodbc
 
+connection = pyodbc.connect('Driver={SQL Server};'
+                            'Server=DESKTOP-5CILQ1E;'
+                            'Database=Bank;'
+                            'Trusted_Connection=yes;'
+                            )
 
+cursor = connection.cursor()
+cursor.execute('SELECT * FROM customer')
+rows = cursor.fetchall()
+
+for row in rows:
+    print(Customer(row).first_name)
+    print(Customer(row).last_name)
+
+# if row:
+#     customer1 = Customer(row)
+
+# print(cursor)
+
+# customer1 = Customer()
+
+# print(customer1.first_name)
 # all these functions can be in a customer class (idea)
 
 
