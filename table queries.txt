@@ -37,11 +37,3 @@ create table transactions(
 	FOREIGN KEY(cus_id) REFERENCES customer(id),
 );
 
---shows transaction + source and recepient balances
-SELECT trans_no,trans_date, src_id, rsv_id,trans_type,total, a1.balance src_balance, a2.balance rsv_balance FROM transactions tr
-LEFT JOIN account a1
-ON tr.src_id = a1.acc_id 
-LEFT JOIN account a2
-ON tr.rsv_id = a2.acc_id;
-
-
