@@ -11,7 +11,22 @@ if(not rows):
 else:
     currentCustomer = Customer(rows[0])
 
+
+cursor.execute(
+    '''SELECT DISTINCT t.trans_no, t.trans_date, t.src_id, t.rsv_id, t.trans_type, t.total, t.cus_id
+FROM customer c, transactions t, account a, userAccounts ua
+WHERE c.id = ua.cus_id and
+	ua.acc_id = a.acc_id and
+	(t.src_id = a.acc_id OR t.cus_id = c.id) and
+	c.id = ?
+ORDER BY(t.trans_date)''', customerId)
+rowss = cursor.fetchall()
+print(rowss)
+
+
 print(currentCustomer)
+print(currentCustomer.list_accounts()[0])
+print(currentCustomer.list_transactions())
 
 
 def ATM_operations(type):
@@ -52,7 +67,7 @@ def ATM_operations(type):
     # Message Withdraw completed
 
 
-ATM_operations("Withdraw")
+# ATM_operations("Withdraw")
 
 
 def open_account():
