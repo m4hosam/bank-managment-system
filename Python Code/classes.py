@@ -48,7 +48,6 @@ class Customer:
         rows = cursor.fetchall()
         for row in rows:
             self.accounts.append(Account(row))
-
         return self.accounts
 
     def list_transactions(self):
@@ -64,67 +63,23 @@ class Customer:
         print(rows)
         for row in rows:
             self.transactions.append(row)
-
         return self.transactions
 
-    def update_name(self, first_name, last_name):
-        self.first_name = first_name
-        self.last_name = last_name
-        cursor.execute(
-            '''UPDATE customer
-            SET customer.firstN = ?, , customer.lastN = ?
-            WHERE customer.id = ?''', self.first_name, self.last_name, self.customer_id)
-
-    def update_firstname(self, first_name):
-        self.first_name = first_name
-        cursor.execute(
-            '''UPDATE customer
-            SET customer.firstN = ?
-            WHERE customer.id = ?''', self.first_name, self.customer_id)
-
-    def update_lastname(self, last_name):
-        self.last_name = last_name
-        cursor.execute(
-            '''UPDATE customer
-            SET customer.lastN = ?
-            WHERE customer.id = ?''', self.last_name, self.customer_id)
-
-    def update_email(self, email):
-        self.email = email
-        cursor.execute(
-            '''UPDATE customer
-            SET customer.email = ?
-            WHERE customer.id = ?''', self.email, self.customer_id)
-
-    def update_phone(self, phone):
-        self.phone = phone
-        cursor.execute(
-            '''UPDATE customer
-            SET customer.phone = ?
-            WHERE customer.id = ?''', self.phone, self.customer_id)
-
-    def update_tc(self, tc):
-        self.TC = tc
-        cursor.execute(
-            '''UPDATE customer
-            SET customer.TC = ?
-            WHERE customer.id = ?''', self.TC, self.customer_id)
-
-    def update_address(self, address):
-        self.address = address
-        cursor.execute(
-            '''UPDATE customer
-            SET customer.Adress = ?
-            WHERE customer.id = ?''', self.address, self.customer_id)
-
-    def update_information(self, first_name, last_name, email, phone, tc, address):
+    def request_update(self, first_name, last_name, email, phone, tc, address):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.phone = phone
         self.TC = tc
         self.address = address
+        cursor.execute(
+            '''
+            INSERT INTO update_customer
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', self.customer_id, self.first_name, self.last_name, self.email, self.phone, self.TC, self.address)
+        connection.commit()
 
+    # The next function should be edited
     def update(self):
         cursor.execute(
             '''UPDATE customer
