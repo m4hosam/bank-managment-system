@@ -9,6 +9,9 @@ create table customer(
 	PRIMARY KEY (id)
 );
 
+ALTER TABLE customer
+ADD cus_status VARCHAR(20);
+
 create table account(
 	acc_id INT,
 	currency VARCHAR(10),
@@ -37,3 +40,19 @@ create table transactions(
 	FOREIGN KEY(cus_id) REFERENCES customer(id),
 );
 
+create table update_customer(
+	id INT,
+	firstN VARCHAR(20),
+	lastN VARCHAR(20),
+	email VARCHAR(30),
+	phone VARCHAR(30),
+	TC VARCHAR(20),
+	Adress VARCHAR(30),
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE currency(
+	curr_code VARCHAR(10),
+	exch_rate FLOAT,
+	PRIMARY KEY (curr_code)
+);
