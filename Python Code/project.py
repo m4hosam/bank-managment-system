@@ -1,32 +1,37 @@
-from SQLconnection import cursor
+# from SQLconnection import cursor
 from classes import Account, Customer
 
 
 customerId = input("Insert Customer Id: ")
-cursor.execute('SELECT * FROM customer WHERE customer.id = ?', customerId)
-rows = cursor.fetchall()
 
-if(not rows):
-    print("Customer not Found")
-else:
-    currentCustomer = Customer(rows[0])
+currentCustomer = Customer(customerId)
 
+print(currentCustomer)
 
-cursor.execute(
-    '''SELECT DISTINCT t.trans_no, t.trans_date, t.src_id, t.rsv_id, t.trans_type, t.total, t.cus_id
-FROM customer c, transactions t, account a, userAccounts ua
-WHERE c.id = ua.cus_id and
-	ua.acc_id = a.acc_id and
-	(t.src_id = a.acc_id OR t.cus_id = c.id) and
-	c.id = ?
-ORDER BY(t.trans_date)''', customerId)
-rowss = cursor.fetchall()
-print(rowss)
+currentCustomer.update_information(
+    "Mohamed", "Hosam", "email@google.com", "556 588 89 56", "99886555478", "Delete My Adress")
 
 
 print(currentCustomer)
-print(currentCustomer.list_accounts()[0])
-print(currentCustomer.list_transactions())
+currentCustomer.update()
+c1 = Customer(customerId)
+print(c1)
+
+# cursor.execute(
+#     '''SELECT DISTINCT t.trans_no, t.trans_date, t.src_id, t.rsv_id, t.trans_type, t.total, t.cus_id
+# FROM customer c, transactions t, account a, userAccounts ua
+# WHERE c.id = ua.cus_id and
+# 	ua.acc_id = a.acc_id and
+# 	(t.src_id = a.acc_id OR t.cus_id = c.id) and
+# 	c.id = ?
+# ORDER BY(t.trans_date)''', customerId)
+# rowss = cursor.fetchall()
+# print(rowss)
+
+
+# print(currentCustomer)
+# print(currentCustomer.list_accounts()[0])
+# print(currentCustomer.list_transactions())
 
 
 def ATM_operations(type):
