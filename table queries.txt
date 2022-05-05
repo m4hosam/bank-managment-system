@@ -56,3 +56,11 @@ CREATE TABLE currency(
 	exch_rate FLOAT,
 	PRIMARY KEY (curr_code)
 );
+
+create table clerk(
+	id INT,
+	firstN VARCHAR(20),
+	lastN VARCHAR(20),
+	phoneNum VARCHAR(30),
+	PRIMARY KEY (id)
+);
