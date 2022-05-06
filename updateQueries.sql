@@ -36,80 +36,10 @@ UPDATE INFO COMMANDS
 
 */
 
-/*
-
---update PHONE*************************
+--updates all columns belonging to a row
 UPDATE customer
-SET customer.phone = {new phone number(string)}
-WHERE customer.id = {customer id(int)};
-
---update EMAIL*************************
-
-UPDATE customer
-SET customer.email = {new email}
-WHERE customer.id = {customer id(int)};
-
---update ADDRESS***********************
-
-UPDATE customer
-SET customer.Adress = {new address}
-WHERE customer.id = {customer id(int)};
-
---update FIRSTNAME*********************
-
-UPDATE customer
-SET customer.firstN = {new firstN}
-WHERE customer.id = {customer id(int)};
-
---update LASTNAME**********************
-
-UPDATE customer
-SET customer.lastN = {new lastN}
-WHERE customer.id = {customer id(int)};
-
---update TC****************************
-
-UPDATE customer
-SET customer.TC = {new TC(string)}
-WHERE customer.id = {customer id(int)};
-
---update BALANCE***********************
-
-UPDATE ACCOUNT
-SET account.balance = {new balance(float/int)}
-WHERE account.acc_id = {customer id(int)}*/
-
---example for updating
-
---update PHONE
-UPDATE customer
-SET customer.phone = '324-789-3429'
-WHERE customer.id = 301;
-
---update EMAIL
-UPDATE customer
-SET customer.email = 'x@email.com'
-WHERE customer.id = 301;
-
---update ADDRESS
-UPDATE customer
-SET customer.Adress = 'X city'
-WHERE customer.id = 301;
-
---update FIRSTNAME
-UPDATE customer
-SET customer.firstN = 'Charlie'
-WHERE customer.id = 301;
-
---update LASTNAME
-UPDATE customer
-SET customer.lastN = 'Smith'
-WHERE customer.id = 301;
-
---update TC
-UPDATE customer
-SET customer.TC = '943022030249'
-WHERE customer.id = 301;
+SET firstN = 'xname', lastN = 'ylastName', email = 'f@h.com', phone = '0000000000', TC = '34555435345345', Adress = 'N City', cus_status = 'ACTIVE'
+WHERE id = {id};
 
 -- update BALANCE
 UPDATE account
