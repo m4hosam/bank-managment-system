@@ -1,10 +1,37 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+from SQLconnection import cursor, connection
 
 from managerMain import Ui_ManagerWindow
 from customerMain import Ui_CustomerWindow
 from homeMain import Ui_MainWindow
+
+
+def check_user_input(input, type):
+    try:
+        u_id = int(input)
+        if(type == "customer"):
+            cursor.execute(
+                'SELECT * FROM customer WHERE customer.id = ?', u_id)
+            row = cursor.fetchone()
+            if(not row):
+                return "Customer Not Found"
+            else:
+                return u_id
+
+        elif(type == "clerk"):
+            cursor.execute(
+                'SELECT * FROM clerk WHERE clerk.id = ?', u_id)
+            row = cursor.fetchone()
+            if(not row):
+                return "Clerk not Found"
+            else:
+                return u_id
+    except ValueError:
+        return "invalid"
 
 
 class CustomerWindow:
@@ -83,6 +110,7 @@ class ManagerWindow:
 
 
 class MainWindow:
+
     def __init__(self):
         self.main_window = QMainWindow()
         self.ui = Ui_MainWindow()
@@ -91,6 +119,7 @@ class MainWindow:
         self.ui.cutomer_btn.clicked.connect(self.customer_clicked)
         self.ui.clerk_btn.clicked.connect(self.clerk_clicked)
         self.ui.manager_btn.clicked.connect(self.manager_clicked)
+        # self.ui.manager_btn.clicked.connect(self.invalid_input)
 
     def show(self):
         self.main_window.show()
@@ -100,24 +129,45 @@ class MainWindow:
 
     def customer_clicked(self):
         cus_id = self.ui.customer_id_value.text()
-        print(cus_id)
-        main_win.hide()
-        customer_win.show()
+        check = check_user_input(cus_id, "customer")
+        if(type(check) == int):
+            main_win.hide()
+            customer_win.show()
+        elif(check == "invalid"):
+            msg.setText("Invalid input")
+            x = msg.exec_()
+        else:
+            msg.setText(check)
+            x = msg.exec_()
 
     def clerk_clicked(self):
         ck_id = self.ui.clerk_id_value.text()
-        print(ck_id)
-        # main_win.hide()
-        # clerk_window.show()
+        check = check_user_input(cus_id, "customer")
+        if(type(check) == int):
+            main_win.hide()
+            # clerk_window.show()
+        elif(check == "invalid"):
+            msg.setText("Invalid input")
+            x = msg.exec_()
+        else:
+            msg.setText(check)
+            x = msg.exec_()
 
     def manager_clicked(self):
-        ck_id = self.ui.clerk_id_value.text()
-        print(ck_id)
         main_win.hide()
         manager_window.show()
 
+    # def invalid_input(self):
+    #     msg = QMessageBox()
+    #     msg.setWindowTitle("Error")
+    #     msg.setText("Invalid input")
+    #     msg.setIcon(QMessageBox.critical)
+    #     x = msg.exec_()
+
 
 app = QApplication(sys.argv)
+msg = QMessageBox()
+msg.setWindowTitle("Error")
 main_win = MainWindow()
 customer_win = CustomerWindow()
 manager_window = ManagerWindow()
