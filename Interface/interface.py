@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow
 
 from managerMain import Ui_ManagerWindow
 from customerMain import Ui_CustomerWindow
+from homeMain import Ui_MainWindow
 
 
 class CustomerWindow:
@@ -81,16 +82,59 @@ class ManagerWindow:
             self.ui.view_transactions_widget)
 
 
-type = input("1-Customer\n2-Manager\n3-Clerk")
-if type == '1':
-    app = QApplication(sys.argv)
-    main_win = CustomerWindow()
-    main_win.show()
-    sys.exit(app.exec_())
+class MainWindow:
+    def __init__(self):
+        self.main_window = QMainWindow()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self.main_window)
+
+        self.ui.cutomer_btn.clicked.connect(self.customer_clicked)
+        self.ui.clerk_btn.clicked.connect(self.clerk_clicked)
+        self.ui.manager_btn.clicked.connect(self.manager_clicked)
+
+    def show(self):
+        self.main_window.show()
+
+    def hide(self):
+        self.main_window.hide()
+
+    def customer_clicked(self):
+        cus_id = self.ui.customer_id_value.text()
+        print(cus_id)
+        main_win.hide()
+        customer_win.show()
+
+    def clerk_clicked(self):
+        ck_id = self.ui.clerk_id_value.text()
+        print(ck_id)
+        # main_win.hide()
+        # clerk_window.show()
+
+    def manager_clicked(self):
+        ck_id = self.ui.clerk_id_value.text()
+        print(ck_id)
+        main_win.hide()
+        manager_window.show()
 
 
-if type == '2':
-    app = QApplication(sys.argv)
-    main_window = ManagerWindow()
-    main_window.show()
-    sys.exit(app.exec_())
+app = QApplication(sys.argv)
+main_win = MainWindow()
+customer_win = CustomerWindow()
+manager_window = ManagerWindow()
+main_win.show()
+sys.exit(app.exec_())
+
+
+# type = input("1-Customer\n2-Manager\n3-Clerk")
+# if type == '1':
+#     app = QApplication(sys.argv)
+#     main_win = CustomerWindow()
+#     main_win.show()
+#     sys.exit(app.exec_())
+
+
+# if type == '2':
+#     app = QApplication(sys.argv)
+#     main_window = ManagerWindow()
+#     main_window.show()
+#     sys.exit(app.exec_())
