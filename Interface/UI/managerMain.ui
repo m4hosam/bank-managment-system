@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>947</width>
-    <height>785</height>
+    <width>913</width>
+    <height>777</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -74,7 +74,7 @@
      <number>5</number>
     </property>
     <widget class="QWidget" name="main_widget">
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>80</x>
@@ -116,7 +116,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>80</x>
@@ -155,7 +155,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>80</x>
@@ -194,7 +194,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>80</x>
@@ -598,10 +598,15 @@
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>100</y>
-        <width>55</width>
-        <height>16</height>
+        <y>60</y>
+        <width>151</width>
+        <height>41</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
       </property>
       <property name="text">
        <string>id</string>
@@ -610,59 +615,115 @@
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>130</x>
-        <y>100</y>
-        <width>55</width>
-        <height>16</height>
+        <x>60</x>
+        <y>120</y>
+        <width>151</width>
+        <height>20</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
       <property name="text">
-       <string>firstName</string>
+       <string>First Name</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>250</x>
-        <y>100</y>
-        <width>55</width>
-        <height>16</height>
+        <x>60</x>
+        <y>160</y>
+        <width>151</width>
+        <height>21</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string>Last Name</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
-        <x>350</x>
-        <y>100</y>
-        <width>55</width>
-        <height>16</height>
+        <x>60</x>
+        <y>200</y>
+        <width>151</width>
+        <height>21</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string>Email</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>100</y>
-        <width>55</width>
-        <height>16</height>
+        <x>60</x>
+        <y>240</y>
+        <width>151</width>
+        <height>21</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string>Phone</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>280</y>
+        <width>151</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>TC</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>325</y>
+        <width>151</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Adress</string>
       </property>
      </widget>
     </widget>
     <widget class="QWidget" name="view_transactions_widget"/>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -767,7 +828,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>947</width>
+     <width>913</width>
      <height>26</height>
     </rect>
    </property>
