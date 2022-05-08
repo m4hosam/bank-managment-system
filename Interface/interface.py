@@ -40,35 +40,49 @@ class CustomerWindow:
         self.ui = Ui_CustomerWindow()
         self.ui.setupUi(self.main_win)
 
-        self.ui.stackedWidget.setCurrentWidget(self.ui.PListAccounts)
+        self.ui.operations_stackedWidget.setCurrentWidget(
+            self.ui.PListAccounts)
 
-        self.ui.moneyTransfer.clicked.connect(self.showMoneyTransfer)
-        self.ui.deposit.clicked.connect(self.showDeposit)
-        self.ui.withdraw.clicked.connect(self.showWithdraw)
-        self.ui.listAccounts.clicked.connect(self.showListAccounts)
-        self.ui.newAccount.clicked.connect(self.showCreateAccount)
-        self.ui.deleteAccount.clicked.connect(self.showDeleteAccount)
+        self.ui.listAccounts_radio.clicked.connect(self.showListAccounts)
+        self.ui.moneyTransfer_radio.clicked.connect(self.showMoneyTransfer)
+        self.ui.withdraw_radio.clicked.connect(self.showWithdraw)
+        self.ui.deposit_radio.clicked.connect(self.showDeposit)
+        self.ui.newAccount_radio.clicked.connect(self.showCreateAccount)
+        self.ui.deleteAccount_radio.clicked.connect(self.showDeleteAccount)
+        self.ui.editInfo_radio.clicked.connect(self.showEditInfo)
+        self.ui.monthlySummary_radio.clicked.connect(self.showMonthlySummery)
 
     def show(self):
         self.main_win.show()
 
     def showMoneyTransfer(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.PMoneyTransfer)
+        self.ui.operations_stackedWidget.setCurrentWidget(
+            self.ui.PMoneyTransfer)
 
     def showDeposit(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.PDeposit)
+        self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PDeposit)
 
     def showWithdraw(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.PWithdraw)
+        self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PWithdraw)
 
     def showListAccounts(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.PListAccounts)
+        self.ui.operations_stackedWidget.setCurrentWidget(
+            self.ui.PListAccounts)
 
     def showCreateAccount(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.PCreateAccount)
+        self.ui.operations_stackedWidget.setCurrentWidget(
+            self.ui.PCreateAccount)
 
     def showDeleteAccount(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.PDeleteAccount)
+        self.ui.operations_stackedWidget.setCurrentWidget(
+            self.ui.PDeleteAccount)
+
+    def showEditInfo(self):
+        self.ui.operations_stackedWidget.setCurrentWidget(self.ui.Pedit_info)
+
+    def showMonthlySummery(self):
+        self.ui.operations_stackedWidget.setCurrentWidget(
+            self.ui.PMonthlySummary)
 
 
 class ManagerWindow:
@@ -142,7 +156,7 @@ class MainWindow:
 
     def clerk_clicked(self):
         ck_id = self.ui.clerk_id_value.text()
-        check = check_user_input(cus_id, "customer")
+        check = check_user_input(ck_id, "customer")
         if(type(check) == int):
             main_win.hide()
             # clerk_window.show()
@@ -157,13 +171,6 @@ class MainWindow:
         main_win.hide()
         manager_window.show()
 
-    # def invalid_input(self):
-    #     msg = QMessageBox()
-    #     msg.setWindowTitle("Error")
-    #     msg.setText("Invalid input")
-    #     msg.setIcon(QMessageBox.critical)
-    #     x = msg.exec_()
-
 
 app = QApplication(sys.argv)
 msg = QMessageBox()
@@ -173,18 +180,3 @@ customer_win = CustomerWindow()
 manager_window = ManagerWindow()
 main_win.show()
 sys.exit(app.exec_())
-
-
-# type = input("1-Customer\n2-Manager\n3-Clerk")
-# if type == '1':
-#     app = QApplication(sys.argv)
-#     main_win = CustomerWindow()
-#     main_win.show()
-#     sys.exit(app.exec_())
-
-
-# if type == '2':
-#     app = QApplication(sys.argv)
-#     main_window = ManagerWindow()
-#     main_window.show()
-#     sys.exit(app.exec_())
