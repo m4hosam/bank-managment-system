@@ -100,3 +100,29 @@ VALUES('Bob','Jones','f@email.com','128-353-4436','34374837493','F City');*/
 /*
 INSERT INTO customer2 
 VALUES('Bob','Jones','qw@email.com','87979789','213487903534','F City');*/
+
+/*
+CREATE TABLE account2(
+	acc_id INT IDENTITY(9000,1) PRIMARY KEY,
+	currency VARCHAR(10),
+	balance FLOAT
+)
+*/
+
+/*
+INSERT INTO account2
+VALUES('EUR',2000);
+INSERT INTO account2
+VALUES('USD',3000);
+INSERT INTO account2
+VALUES('TL',4000);
+INSERT INTO account2
+VALUES('TL',5000);
+INSERT INTO account2
+VALUES('EUR',6000);
+INSERT INTO account2
+VALUES('EUR',7000);
+INSERT INTO account2
+VALUES('USD',8000);
+INSERT INTO account2
+VALUES('USD',9000);*/
