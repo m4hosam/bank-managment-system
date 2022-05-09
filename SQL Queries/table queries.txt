@@ -128,3 +128,33 @@ INSERT INTO account2
 VALUES('USD',8000);
 INSERT INTO account2
 VALUES('USD',9000);*/
+
+
+/*
+CREATE TABLE userAccounts2(
+	acc_id INT,
+	cus_id INT
+	FOREIGN KEY(cus_id) REFERENCES customer2(id),
+	FOREIGN KEY(acc_id) REFERENCES account2(acc_id),
+)*/
+/*
+INSERT INTO userAccounts2 
+VALUES(9000,303)
+INSERT INTO userAccounts2
+VALUES(9001,302);
+INSERT INTO userAccounts2
+VALUES(9002,302);
+INSERT INTO userAccounts2
+VALUES(9003,301);
+INSERT INTO userAccounts2
+VALUES(9004,303);
+INSERT INTO userAccounts2
+VALUES(9005,304);
+INSERT INTO userAccounts2
+VALUES(9006,301);
+INSERT INTO userAccounts2
+VALUES(9007,305);
+INSERT INTO userAccounts2
+VALUES(9008,306);
+INSERT INTO userAccounts2
+VALUES(9009,307);*/
