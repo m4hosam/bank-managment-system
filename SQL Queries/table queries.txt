@@ -213,3 +213,55 @@ VALUES(306,7);
 INSERT INTO customerClerks2
 VALUES(307,9);*/
 
+/*
+CREATE TABLE customerStatus2 (
+	cus_id INT,
+	cus_status varchar(20),
+	FOREIGN KEY(cus_id) REFERENCES customer2(id),
+);
+
+INSERT INTO customerStatus2
+VALUES(300,'ACTIVE');
+INSERT INTO customerStatus2
+VALUES(301,'ACTIVE');
+INSERT INTO customerStatus2
+VALUES(302,'ACTIVE');
+INSERT INTO customerStatus2
+VALUES(303,'ACTIVE');
+INSERT INTO customerStatus2
+VALUES(304,'ACTIVE');
+INSERT INTO customerStatus2
+VALUES(305,'ACTIVE');
+INSERT INTO customerStatus2
+VALUES(306,'ACTIVE');
+INSERT INTO customerStatus2
+VALUES(307,'ACTIVE');
+*/
+
+/*CREATE TABLE accountStatus2 (
+	acc_id INT,
+	acc_status varchar(20),
+	FOREIGN KEY(acc_id) REFERENCES account2(acc_id),
+)*/
+/*
+INSERT INTO accountStatus2
+VALUES(9000,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9001,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9002,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9003,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9004,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9005,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9006,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9007,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9008,'ACTIVE');
+INSERT INTO accountStatus2
+VALUES(9009,'ACTIVE');*/
+
