@@ -158,3 +158,33 @@ INSERT INTO userAccounts2
 VALUES(9008,306);
 INSERT INTO userAccounts2
 VALUES(9009,307);*/
+
+
+/*
+CREATE TABLE transactions2(
+	trans_no INT IDENTITY(1,1) PRIMARY KEY,
+	trans_date DATE,
+	src_id INT,
+	rsv_id INT,
+	trans_type VARCHAR(50),
+	total FLOAT,
+	FOREIGN KEY(src_id) REFERENCES account2(acc_id),
+	FOREIGN KEY(rsv_id) REFERENCES account2(acc_id),
+)*/
+
+/*
+INSERT INTO transactions2 
+VALUES('2022-02-28',9001,9002,'money transfer',100);
+INSERT INTO transactions2 
+VALUES('2022-01-03',9002,NULL,'withdraw',900);
+INSERT INTO transactions2 
+VALUES('2022-01-12', NULL,9003,'deposit',500);
+INSERT INTO transactions2 
+VALUES('2022-01-03',9002,9001,'money transfer',400);
+INSERT INTO transactions2 
+VALUES('2022-04-24',NULL,9003,'deposit',600);
+INSERT INTO transactions2 
+VALUES('2022-04-24',9004,9003,'money transfer',400);
+INSERT INTO transactions2 
+VALUES('2022-02-28',9009,9002,'money transfer',150);
+*/
