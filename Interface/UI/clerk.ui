@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>931</width>
+    <height>885</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>931</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="clerk_id">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>20</y>
+       <width>141</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>18</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>clerk_ID</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="widget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>90</y>
+      <width>261</width>
+      <height>721</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QRadioButton" name="radioButton_2">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Manage Customers</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_4">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>View Customer 
+ Finances</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>View Customer 
+Transactions</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_3">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>View Customer 
+Requests</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>90</y>
+      <width>661</width>
+      <height>741</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="PManage_customers">
+     <widget class="QTableWidget" name="MC_table">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>651</width>
+        <height>571</height>
+       </rect>
+      </property>
+      <column>
+       <property name="text">
+        <string>customerID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>firstName</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>LastName</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>email</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>phoneNum</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>TC</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Address</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QPushButton" name="deleteCustomer_button">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>600</y>
+        <width>141</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Delete Customer</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="addCustomer_button">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>600</y>
+        <width>161</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>add customer</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="firstName_textEdit">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>590</y>
+        <width>151</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>firstName</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="lastName_textEdit">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>630</y>
+        <width>151</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>lastName</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="phoneNum_textEdit">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>670</y>
+        <width>151</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>phoneNum</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="email_textEdit">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>590</y>
+        <width>151</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>email</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="address_textEdit">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>670</y>
+        <width>151</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>Address</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="TC_textEdit">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>630</y>
+        <width>151</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="placeholderText">
+       <string>TC</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="PCustomer_finances">
+     <widget class="QTableWidget" name="tableWidget_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>651</width>
+        <height>701</height>
+       </rect>
+      </property>
+      <column>
+       <property name="text">
+        <string>customerID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>income</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>expense</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>totalBalance</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="PCustomer_transactions">
+     <widget class="QTableWidget" name="tableWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>651</width>
+        <height>681</height>
+       </rect>
+      </property>
+      <column>
+       <property name="text">
+        <string>customerID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>accID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>type</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>total</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="PCustomer_requests">
+     <widget class="QTableWidget" name="tableWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>641</width>
+        <height>581</height>
+       </rect>
+      </property>
+      <column>
+       <property name="text">
+        <string>customerID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>requestType</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Description</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>600</y>
+        <width>171</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>accept</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>600</y>
+        <width>171</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>reject</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>931</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
