@@ -64,3 +64,39 @@ create table clerk(
 	phoneNum VARCHAR(30),
 	PRIMARY KEY (id)
 );
+
+
+
+*******************NEW TABLES******************************
+
+/*
+CREATE TABLE customer2(
+	id INT IDENTITY(300,1) PRIMARY KEY,
+	firstN VARCHAR(50),
+	lastN VARCHAR(50),
+	email VARCHAR(50) UNIQUE,
+	phone VARCHAR(50) UNIQUE,
+	TC VARCHAR(50) UNIQUE,
+	adress VARCHAR(50)
+);*/
+
+/*
+INSERT INTO customer2 
+VALUES('James','Smith','a@email.com','620-468-2790','49820895404','A City');
+INSERT INTO customer2 
+VALUES('Robert','Williams','b@email.com','850-336-8915','55145487360','B City');
+INSERT INTO customer2 
+VALUES('Mary','Brown','c@email.com','936-891-0789','54206564887','C City');
+INSERT INTO customer2 
+VALUES('Alice','Davis','d@email.com','540-291-1960','96481309203','D City');
+INSERT INTO customer2 
+VALUES('James','Smith','e@email.com','719-239-6614','53789409546','E City');
+INSERT INTO customer2 
+VALUES('Karen','Briggs','g@email.com','343-454-2313','32468762499','G City');
+INSERT INTO customer2 
+VALUES('Bob','Jones','f@email.com','128-353-4436','34374837493','F City');*/
+
+
+/*
+INSERT INTO customer2 
+VALUES('Bob','Jones','qw@email.com','87979789','213487903534','F City');*/
