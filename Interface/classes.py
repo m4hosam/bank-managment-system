@@ -74,7 +74,7 @@ class Customer:
             'SELECT * FROM customer WHERE customer.id = ?', customer_id)
         row = cursor.fetchone()
         if(not row):
-            print("Customer not Found")
+            print("Customer not Found Class Related")
         else:
             self.first_name = row.firstN
             self.last_name = row.lastN

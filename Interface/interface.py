@@ -11,6 +11,8 @@ from homeMain import Ui_MainWindow
 
 from classes import Account, Customer
 
+from time import time, sleep
+
 
 def check_user_input(input, type):
     try:
@@ -43,14 +45,15 @@ def check_user_input(input, type):
 
 
 class CustomerWindow:
+    cus_id = 0
+
     def __init__(self):
         self.main_win = QMainWindow()
         self.ui = Ui_CustomerWindow()
         self.ui.setupUi(self.main_win)
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PListAccounts)
-        # self.cus_id = cus_id
-        # self.display_customer_info(self.cus_id)
+
         self.ui.listAccounts_radio.clicked.connect(self.showListAccounts)
         self.ui.moneyTransfer_radio.clicked.connect(self.showMoneyTransfer)
         self.ui.withdraw_radio.clicked.connect(self.showWithdraw)
@@ -60,49 +63,58 @@ class CustomerWindow:
         self.ui.editInfo_radio.clicked.connect(self.showEditInfo)
         self.ui.monthlySummary_radio.clicked.connect(self.showMonthlySummery)
 
-    def show(self, cus_id):
-        self.display_customer_info(cus_id)
-        self.display_accounts(cus_id)
-        self.display_withdraw(cus_id)
-        self.display_deposit(cus_id)
-        self.display_delete(cus_id)
-        self.display_moneyTransfer(cus_id)
-        self.ui.withdraw_btn.clicked.connect(lambda: self.withdraw(cus_id))
-        self.ui.deposit_btn.clicked.connect(lambda: self.deposit(cus_id))
+    def show(self):
+        print("customer11111: " + str(self.cus_id))
+        self.display_customer_info()
+        self.display_accounts()
+        self.display_withdraw()
+        self.display_deposit()
+        self.display_delete()
+        self.display_moneyTransfer()
+
+        # self.ui.withdraw_btn.clicked.connect(lambda: self.withdraw(cus_id))
+        # self.ui.deposit_btn.clicked.connect(lambda: self.deposit(cus_id))
         self.main_win.show()
 
     def showMoneyTransfer(self):
+        print("customer2222: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PMoneyTransfer)
 
     def showDeposit(self):
+        print("customer3333: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PDeposit)
 
     def showWithdraw(self):
+        print("customer44444: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PWithdraw)
 
     def showListAccounts(self):
+        print("customer5555: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PListAccounts)
 
     def showCreateAccount(self):
+        print("customer6666: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PCreateAccount)
 
     def showDeleteAccount(self):
+        print("customer77777: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PDeleteAccount)
 
     def showEditInfo(self):
+        print("customer8888: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.Pedit_info)
 
     def showMonthlySummery(self):
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PMonthlySummary)
 
-    def display_customer_info(self, cus_id):
-        currentCustomer = Customer(cus_id)
-        self.ui.info_cusID_label.setText("NO: "+str(cus_id))
+    def display_customer_info(self):
+        currentCustomer = Customer(self.cus_id)
+        self.ui.info_cusID_label.setText("NO: "+str(self.cus_id))
         self.ui.info_cusName_label.setText(
             currentCustomer.first_name+" "+currentCustomer.last_name)
         self.ui.info_TC_label.setText(currentCustomer.TC)
@@ -110,8 +122,8 @@ class CustomerWindow:
         self.ui.info_email_label.setText(currentCustomer.email)
         self.ui.info_address_label.setText(currentCustomer.address)
 
-    def display_accounts(self, cus_id):
-        currentCustomer = Customer(cus_id)
+    def display_accounts(self):
+        currentCustomer = Customer(self.cus_id)
         accounts = currentCustomer.list_accounts()
         self.ui.listAccounts_tableWidget_2.setRowCount(len(accounts))
         counter = 0
@@ -124,8 +136,8 @@ class CustomerWindow:
                 counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
             counter += 1
 
-    def display_withdraw(self, cus_id):
-        currentCustomer = Customer(cus_id)
+    def display_withdraw(self):
+        currentCustomer = Customer(self.cus_id)
         accounts = currentCustomer.list_accounts()
         self.ui.withdraw_tableWidget.setRowCount(len(accounts))
         counter = 0
@@ -138,8 +150,8 @@ class CustomerWindow:
                 counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
             counter += 1
 
-    def display_deposit(self, cus_id):
-        currentCustomer = Customer(cus_id)
+    def display_deposit(self):
+        currentCustomer = Customer(self.cus_id)
         accounts = currentCustomer.list_accounts()
         self.ui.deposit_tableWidget.setRowCount(len(accounts))
         counter = 0
@@ -152,8 +164,8 @@ class CustomerWindow:
                 counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
             counter += 1
 
-    def display_delete(self, cus_id):
-        currentCustomer = Customer(cus_id)
+    def display_delete(self):
+        currentCustomer = Customer(self.cus_id)
         accounts = currentCustomer.list_accounts()
         self.ui.DA_tableWidget.setRowCount(len(accounts))
         counter = 0
@@ -166,8 +178,8 @@ class CustomerWindow:
                 counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
             counter += 1
 
-    def display_moneyTransfer(self, cus_id):
-        currentCustomer = Customer(cus_id)
+    def display_moneyTransfer(self):
+        currentCustomer = Customer(self.cus_id)
         accounts = currentCustomer.list_accounts()
         self.ui.MT_listAccounts_tableWidget.setRowCount(len(accounts))
         counter = 0
@@ -180,8 +192,8 @@ class CustomerWindow:
                 counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
             counter += 1
 
-    def withdraw(self, cus_id):
-        cur_cus = Customer(cus_id)
+    def withdraw(self):
+        cur_cus = Customer(self.cus_id)
         accounts = cur_cus.list_accounts()
         c = self.ui.withdraw_tableWidget.currentRow()
         selected_acc = accounts[c]
@@ -199,10 +211,10 @@ class CustomerWindow:
         except ValueError:
             msg.setText("Invalid input")
             x = msg.exec_()
-        self.show(cus_id)
+        # self.show(self.cus_id)
 
-    def deposit(self, cus_id):
-        cur_cus_d = Customer(cus_id)
+    def deposit(self):
+        cur_cus_d = Customer(self.cus_id)
         accounts_d = cur_cus_d.list_accounts()
         c = self.ui.deposit_tableWidget.currentRow()
         selected_acc = accounts_d[c]
@@ -219,7 +231,7 @@ class CustomerWindow:
         except ValueError:
             msg.setText("Invalid input")
             x = msg.exec_()
-        self.show(cus_id)
+        # self.show(cus_id)
 
 
 class ManagerWindow:
@@ -261,16 +273,13 @@ class ManagerWindow:
 
 
 class MainWindow:
-
     def __init__(self):
         self.main_window = QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.main_window)
-
         self.ui.cutomer_btn.clicked.connect(self.customer_clicked)
         self.ui.clerk_btn.clicked.connect(self.clerk_clicked)
         self.ui.manager_btn.clicked.connect(self.manager_clicked)
-        # self.ui.manager_btn.clicked.connect(self.invalid_input)
 
     def show(self):
         self.main_window.show()
@@ -279,17 +288,12 @@ class MainWindow:
         self.main_window.hide()
 
     def customer_clicked(self):
-        cus_id = self.ui.customer_id_value.text()
-        check = check_user_input(cus_id, "customer")
-        self.cus_id = check
-        # current_id = check
-        if(type(check) == int):
+        check = self.ui.customer_id_value.text()
+        customer_id = check_user_input(check, "customer")
+        if(type(customer_id) == int):
             main_win.hide()
-            print("1")
-            customer_win = CustomerWindow(check)
-            print("2")
-            customer_win.show(check)
-            print("3")
+            CustomerWindow.cus_id = customer_id
+            customer_win.show()
 
     def clerk_clicked(self):
         ck_id = self.ui.clerk_id_value.text()
@@ -310,7 +314,7 @@ app = QApplication(sys.argv)
 msg = QMessageBox()
 msg.setWindowTitle("Error")
 main_win = MainWindow()
-
-# manager_window = ManagerWindow()
+customer_win = CustomerWindow()
+manager_window = ManagerWindow()
 main_win.show()
 sys.exit(app.exec_())
