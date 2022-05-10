@@ -92,3 +92,25 @@ WHERE tr.src_id IN(SELECT ua.acc_id
 					WHERE c.id = cc.cus_id and
 						clerk_id = {clerk_id}))
 */
+
+--expense
+SELECT DISTINCT ua.cus_id, tr.*, total * exch_rate
+FROM transactions2 tr, currency curr, account2 a, userAccounts2 ua
+WHERE ua.acc_id = tr.src_id and
+	tr.src_id = a.acc_id and
+	a.currency = curr.curr_code;
+
+--income
+SELECT DISTINCT ua.cus_id, tr.*, total * exch_rate
+FROM transactions2 tr, currency curr, account2 a, userAccounts2 ua
+WHERE ua.acc_id = tr.rsv_id and
+	tr.rsv_id = a.acc_id and
+	a.currency = curr.curr_code;
+
+--total balance
+SELECT c.id,/*, a.acc_id,*/ SUM(exch_rate * balance)  as totalBalance
+FROM currency cur, userAccounts2 ua, account2 a, customer2 c
+WHERE ua.acc_id = a.acc_id and
+		a.currency = cur.curr_code and
+		c.id = ua.cus_id
+GROUP BY(c.id)
