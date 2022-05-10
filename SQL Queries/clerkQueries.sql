@@ -75,3 +75,20 @@ SELECT a.acc_id
 				WHERE clerk.id = cusClrk.clrk_id and
 					cus.id = cusClrk.cus_id and
 					cusClrk.clrk_id = 3);*/
+
+
+--SELECTS ALL TRANSACTIONS WHERE THE SOURCE IS AN ACCOUNT BELONGING TO ONE OF THE CLERK'S CUSTOMERS, ALSO DISPLAYS THE CUS_ID AND ACCOUNT BALANCE
+/*SELECT tr.trans_date,tr.src_id as src_acc, trans_type, total, ua.cus_id, a.balance
+FROM transactions2 tr
+LEFT JOIN userAccounts2 ua
+ON ua.acc_id = tr.src_id 
+LEFT JOIN account2 a
+ON a.acc_id = tr.src_id
+WHERE tr.src_id IN(SELECT ua.acc_id
+		FROM userAccounts2 ua, customer2 c
+		WHERE c.id = ua.cus_id and
+			ua.cus_id IN (SELECT c.id
+					FROM customer2 c, customerClerks2 cc
+					WHERE c.id = cc.cus_id and
+						clerk_id = {clerk_id}))
+*/
