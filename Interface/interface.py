@@ -9,6 +9,8 @@ from managerMain import Ui_ManagerWindow
 from customerMain import Ui_CustomerWindow
 from homeMain import Ui_MainWindow
 
+from classes import Account, Customer
+
 
 def check_user_input(input, type):
     try:
@@ -18,6 +20,8 @@ def check_user_input(input, type):
                 'SELECT * FROM customer WHERE customer.id = ?', u_id)
             row = cursor.fetchone()
             if(not row):
+                msg.setText("Customer Not Found")
+                x = msg.exec_()
                 return "Customer Not Found"
             else:
                 return u_id
@@ -27,10 +31,14 @@ def check_user_input(input, type):
                 'SELECT * FROM clerk WHERE clerk.id = ?', u_id)
             row = cursor.fetchone()
             if(not row):
+                msg.setText("Clerk not Found")
+                x = msg.exec_()
                 return "Clerk not Found"
             else:
                 return u_id
     except ValueError:
+        msg.setText("Invalid input")
+        x = msg.exec_()
         return "invalid"
 
 
@@ -39,10 +47,10 @@ class CustomerWindow:
         self.main_win = QMainWindow()
         self.ui = Ui_CustomerWindow()
         self.ui.setupUi(self.main_win)
-
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PListAccounts)
-
+        # self.cus_id = cus_id
+        # self.display_customer_info(self.cus_id)
         self.ui.listAccounts_radio.clicked.connect(self.showListAccounts)
         self.ui.moneyTransfer_radio.clicked.connect(self.showMoneyTransfer)
         self.ui.withdraw_radio.clicked.connect(self.showWithdraw)
@@ -52,7 +60,15 @@ class CustomerWindow:
         self.ui.editInfo_radio.clicked.connect(self.showEditInfo)
         self.ui.monthlySummary_radio.clicked.connect(self.showMonthlySummery)
 
-    def show(self):
+    def show(self, cus_id):
+        self.display_customer_info(cus_id)
+        self.display_accounts(cus_id)
+        self.display_withdraw(cus_id)
+        self.display_deposit(cus_id)
+        self.display_delete(cus_id)
+        self.display_moneyTransfer(cus_id)
+        self.ui.withdraw_btn.clicked.connect(lambda: self.withdraw(cus_id))
+        self.ui.deposit_btn.clicked.connect(lambda: self.deposit(cus_id))
         self.main_win.show()
 
     def showMoneyTransfer(self):
@@ -83,6 +99,127 @@ class CustomerWindow:
     def showMonthlySummery(self):
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PMonthlySummary)
+
+    def display_customer_info(self, cus_id):
+        currentCustomer = Customer(cus_id)
+        self.ui.info_cusID_label.setText("NO: "+str(cus_id))
+        self.ui.info_cusName_label.setText(
+            currentCustomer.first_name+" "+currentCustomer.last_name)
+        self.ui.info_TC_label.setText(currentCustomer.TC)
+        self.ui.info_phoneNum_label.setText(currentCustomer.phone)
+        self.ui.info_email_label.setText(currentCustomer.email)
+        self.ui.info_address_label.setText(currentCustomer.address)
+
+    def display_accounts(self, cus_id):
+        currentCustomer = Customer(cus_id)
+        accounts = currentCustomer.list_accounts()
+        self.ui.listAccounts_tableWidget_2.setRowCount(len(accounts))
+        counter = 0
+        for account in accounts:
+            self.ui.listAccounts_tableWidget_2.setItem(
+                counter, 0, QtWidgets.QTableWidgetItem(str(account.account_id)))
+            self.ui.listAccounts_tableWidget_2.setItem(
+                counter, 1, QtWidgets.QTableWidgetItem(account.currency))
+            self.ui.listAccounts_tableWidget_2.setItem(
+                counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
+            counter += 1
+
+    def display_withdraw(self, cus_id):
+        currentCustomer = Customer(cus_id)
+        accounts = currentCustomer.list_accounts()
+        self.ui.withdraw_tableWidget.setRowCount(len(accounts))
+        counter = 0
+        for account in accounts:
+            self.ui.withdraw_tableWidget.setItem(
+                counter, 0, QtWidgets.QTableWidgetItem(str(account.account_id)))
+            self.ui.withdraw_tableWidget.setItem(
+                counter, 1, QtWidgets.QTableWidgetItem(account.currency))
+            self.ui.withdraw_tableWidget.setItem(
+                counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
+            counter += 1
+
+    def display_deposit(self, cus_id):
+        currentCustomer = Customer(cus_id)
+        accounts = currentCustomer.list_accounts()
+        self.ui.deposit_tableWidget.setRowCount(len(accounts))
+        counter = 0
+        for account in accounts:
+            self.ui.deposit_tableWidget.setItem(
+                counter, 0, QtWidgets.QTableWidgetItem(str(account.account_id)))
+            self.ui.deposit_tableWidget.setItem(
+                counter, 1, QtWidgets.QTableWidgetItem(account.currency))
+            self.ui.deposit_tableWidget.setItem(
+                counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
+            counter += 1
+
+    def display_delete(self, cus_id):
+        currentCustomer = Customer(cus_id)
+        accounts = currentCustomer.list_accounts()
+        self.ui.DA_tableWidget.setRowCount(len(accounts))
+        counter = 0
+        for account in accounts:
+            self.ui.DA_tableWidget.setItem(
+                counter, 0, QtWidgets.QTableWidgetItem(str(account.account_id)))
+            self.ui.DA_tableWidget.setItem(
+                counter, 1, QtWidgets.QTableWidgetItem(account.currency))
+            self.ui.DA_tableWidget.setItem(
+                counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
+            counter += 1
+
+    def display_moneyTransfer(self, cus_id):
+        currentCustomer = Customer(cus_id)
+        accounts = currentCustomer.list_accounts()
+        self.ui.MT_listAccounts_tableWidget.setRowCount(len(accounts))
+        counter = 0
+        for account in accounts:
+            self.ui.MT_listAccounts_tableWidget.setItem(
+                counter, 0, QtWidgets.QTableWidgetItem(str(account.account_id)))
+            self.ui.MT_listAccounts_tableWidget.setItem(
+                counter, 1, QtWidgets.QTableWidgetItem(account.currency))
+            self.ui.MT_listAccounts_tableWidget.setItem(
+                counter, 2, QtWidgets.QTableWidgetItem(str(account.balance)))
+            counter += 1
+
+    def withdraw(self, cus_id):
+        cur_cus = Customer(cus_id)
+        accounts = cur_cus.list_accounts()
+        c = self.ui.withdraw_tableWidget.currentRow()
+        selected_acc = accounts[c]
+        print("withdraw current row: "+str(c))
+        print("withdraw selected account: "+str(selected_acc))
+
+        try:
+            amount = int(self.ui.withdraw_textEdit.toPlainText())
+            print("withdraw amount: "+str(amount))
+            if(c != -1 and type(amount) == int and (int(selected_acc.balance) - int(amount)) >= 0):
+                selected_acc.withdraw(amount)
+            else:
+                msg.setText("Invalid input")
+                x = msg.exec_()
+        except ValueError:
+            msg.setText("Invalid input")
+            x = msg.exec_()
+        self.show(cus_id)
+
+    def deposit(self, cus_id):
+        cur_cus_d = Customer(cus_id)
+        accounts_d = cur_cus_d.list_accounts()
+        c = self.ui.deposit_tableWidget.currentRow()
+        selected_acc = accounts_d[c]
+        print("deposit current row: "+str(c))
+        print("deposit selected account: "+str(selected_acc))
+        try:
+            amount = int(self.ui.deposit_textEdit.toPlainText())
+            print("deposit amount: "+str(amount))
+            if(c != -1 and type(amount) == int):
+                selected_acc.deposit(amount)
+            else:
+                msg.setText("Invalid input")
+                x = msg.exec_()
+        except ValueError:
+            msg.setText("Invalid input")
+            x = msg.exec_()
+        self.show(cus_id)
 
 
 class ManagerWindow:
@@ -144,15 +281,15 @@ class MainWindow:
     def customer_clicked(self):
         cus_id = self.ui.customer_id_value.text()
         check = check_user_input(cus_id, "customer")
+        self.cus_id = check
+        # current_id = check
         if(type(check) == int):
             main_win.hide()
-            customer_win.show()
-        elif(check == "invalid"):
-            msg.setText("Invalid input")
-            x = msg.exec_()
-        else:
-            msg.setText(check)
-            x = msg.exec_()
+            print("1")
+            customer_win = CustomerWindow(check)
+            print("2")
+            customer_win.show(check)
+            print("3")
 
     def clerk_clicked(self):
         ck_id = self.ui.clerk_id_value.text()
@@ -160,23 +297,20 @@ class MainWindow:
         if(type(check) == int):
             main_win.hide()
             # clerk_window.show()
-        elif(check == "invalid"):
-            msg.setText("Invalid input")
-            x = msg.exec_()
-        else:
-            msg.setText(check)
-            x = msg.exec_()
 
     def manager_clicked(self):
         main_win.hide()
         manager_window.show()
+
+    # def customerId(self):
+    #     return self.cus_id
 
 
 app = QApplication(sys.argv)
 msg = QMessageBox()
 msg.setWindowTitle("Error")
 main_win = MainWindow()
-customer_win = CustomerWindow()
-manager_window = ManagerWindow()
+
+# manager_window = ManagerWindow()
 main_win.show()
 sys.exit(app.exec_())
