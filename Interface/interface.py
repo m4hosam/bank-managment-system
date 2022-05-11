@@ -9,9 +9,7 @@ from managerMain import Ui_ManagerWindow
 from customerMain import Ui_CustomerWindow
 from homeMain import Ui_MainWindow
 
-from classes import Account, Customer
-
-from time import time, sleep
+from classes import Account, Customer, searchAccountIDs
 
 
 def check_user_input(input, type):
@@ -19,7 +17,7 @@ def check_user_input(input, type):
         u_id = int(input)
         if(type == "customer"):
             cursor.execute(
-                'SELECT * FROM customer WHERE customer.id = ?', u_id)
+                'SELECT * FROM customer2 WHERE customer2.id = ?', u_id)
             row = cursor.fetchone()
             if(not row):
                 msg.setText("Customer Not Found")
@@ -30,7 +28,7 @@ def check_user_input(input, type):
 
         elif(type == "clerk"):
             cursor.execute(
-                'SELECT * FROM clerk WHERE clerk.id = ?', u_id)
+                'SELECT * FROM customerClerks2 WHERE customerClerks2.clerk_id = ?', u_id)
             row = cursor.fetchone()
             if(not row):
                 msg.setText("Clerk not Found")
@@ -63,49 +61,54 @@ class CustomerWindow:
         self.ui.editInfo_radio.clicked.connect(self.showEditInfo)
         self.ui.monthlySummary_radio.clicked.connect(self.showMonthlySummery)
 
+        self.ui.deposit_btn.clicked.connect(self.deposit)
+        self.ui.withdraw_btn.clicked.connect(self.withdraw)
+        self.ui.tranfer_btn.clicked.connect(self.money_transfer)
+
     def show(self):
-        print("customer11111: " + str(self.cus_id))
         self.display_customer_info()
         self.display_accounts()
-        self.display_withdraw()
-        self.display_deposit()
-        self.display_delete()
-        self.display_moneyTransfer()
-
-        # self.ui.withdraw_btn.clicked.connect(lambda: self.withdraw(cus_id))
-        # self.ui.deposit_btn.clicked.connect(lambda: self.deposit(cus_id))
         self.main_win.show()
 
     def showMoneyTransfer(self):
-        print("customer2222: " + str(self.cus_id))
+        # print("customer2222: " + str(self.cus_id))
+        self.display_moneyTransfer()
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PMoneyTransfer)
 
     def showDeposit(self):
-        print("customer3333: " + str(self.cus_id))
+        # print("customer3333: " + str(self.cus_id))
+        self.display_deposit()
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PDeposit)
+        print("deposit k85")
+        # self.ui.deposit_btn.clicked.connect(self.deposit)
 
     def showWithdraw(self):
-        print("customer44444: " + str(self.cus_id))
+        # print("customer44444: " + str(self.cus_id))
+        self.display_withdraw()
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PWithdraw)
+        print("withdraw k95")
+        # self.ui.withdraw_btn.clicked.connect(self.withdraw)
 
     def showListAccounts(self):
-        print("customer5555: " + str(self.cus_id))
+        # print("customer5555: " + str(self.cus_id))
+        self.display_accounts()
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PListAccounts)
 
     def showCreateAccount(self):
-        print("customer6666: " + str(self.cus_id))
+        # print("customer6666: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PCreateAccount)
 
     def showDeleteAccount(self):
-        print("customer77777: " + str(self.cus_id))
+        # print("customer77777: " + str(self.cus_id))
+        self.display_delete()
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PDeleteAccount)
 
     def showEditInfo(self):
-        print("customer8888: " + str(self.cus_id))
+        # print("customer8888: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.Pedit_info)
 
     def showMonthlySummery(self):
@@ -123,6 +126,7 @@ class CustomerWindow:
         self.ui.info_address_label.setText(currentCustomer.address)
 
     def display_accounts(self):
+
         currentCustomer = Customer(self.cus_id)
         accounts = currentCustomer.list_accounts()
         self.ui.listAccounts_tableWidget_2.setRowCount(len(accounts))
@@ -197,41 +201,59 @@ class CustomerWindow:
         accounts = cur_cus.list_accounts()
         c = self.ui.withdraw_tableWidget.currentRow()
         selected_acc = accounts[c]
-        print("withdraw current row: "+str(c))
-        print("withdraw selected account: "+str(selected_acc))
 
         try:
             amount = int(self.ui.withdraw_textEdit.toPlainText())
-            print("withdraw amount: "+str(amount))
-            if(c != -1 and type(amount) == int and (int(selected_acc.balance) - int(amount)) >= 0):
+            if(c != -1 and (int(selected_acc.balance) - int(amount)) >= 0):
                 selected_acc.withdraw(amount)
             else:
-                msg.setText("Invalid input")
+                msg.setText("Selection or overlimit ERROR")
                 x = msg.exec_()
         except ValueError:
             msg.setText("Invalid input")
             x = msg.exec_()
-        # self.show(self.cus_id)
+        # Redirect to list accounts home page
+        self.ui.listAccounts_radio.setChecked(True)
+        self.showListAccounts()
 
     def deposit(self):
         cur_cus_d = Customer(self.cus_id)
         accounts_d = cur_cus_d.list_accounts()
         c = self.ui.deposit_tableWidget.currentRow()
         selected_acc = accounts_d[c]
-        print("deposit current row: "+str(c))
-        print("deposit selected account: "+str(selected_acc))
         try:
             amount = int(self.ui.deposit_textEdit.toPlainText())
-            print("deposit amount: "+str(amount))
             if(c != -1 and type(amount) == int):
                 selected_acc.deposit(amount)
             else:
-                msg.setText("Invalid input")
+                msg.setText("Selection or overlimit ERROR")
                 x = msg.exec_()
         except ValueError:
             msg.setText("Invalid input")
             x = msg.exec_()
-        # self.show(cus_id)
+
+        self.ui.listAccounts_radio.setChecked(True)
+        self.showListAccounts()
+
+    def money_transfer(self):
+        cur_cus_m = Customer(self.cus_id)
+        accounts_m = cur_cus_m.list_accounts()
+        c = self.ui.MT_listAccounts_tableWidget.currentRow()
+        selected_acc = accounts_m[c]
+        try:
+            receiver_id = int(self.ui.to_account_no.toPlainText())
+            total = int(self.ui.MT_total_textEdit.toPlainText())
+            receiver_acc = searchAccountIDs(receiver_id)
+            if(c != -1 and (int(selected_acc.balance) - int(total)) >= 0 and receiver_acc != 1):
+                selected_acc.money_transfer(receiver_acc, total)
+            else:
+                msg.setText("Selection or overlimit ERROR or acc error")
+                x = msg.exec_()
+        except ValueError:
+            msg.setText("Invalid input")
+            x = msg.exec_()
+        self.ui.listAccounts_radio.setChecked(True)
+        self.showListAccounts()
 
 
 class ManagerWindow:
