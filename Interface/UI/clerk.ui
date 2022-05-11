@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>931</width>
+    <width>1232</width>
     <height>885</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="widget" native="true">
+  <widget class="QWidget" name="main_widget">
+   <widget class="QWidget" name="clerk_info" native="true">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>931</width>
+      <width>1141</width>
       <height>91</height>
      </rect>
     </property>
@@ -44,7 +44,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="widget_2" native="true">
+   <widget class="QWidget" name="operations_widget" native="true">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -55,7 +55,7 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QRadioButton" name="radioButton_2">
+      <widget class="QRadioButton" name="manageCustomers_radio">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -69,7 +69,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_4">
+      <widget class="QRadioButton" name="viewCustomerFinances_radio">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -84,7 +84,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton">
+      <widget class="QRadioButton" name="viewCusTransactions_radio">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -99,7 +99,7 @@ Transactions</string>
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_3">
+      <widget class="QRadioButton" name="viewCusRequests_radio">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -115,17 +115,17 @@ Requests</string>
      </item>
     </layout>
    </widget>
-   <widget class="QStackedWidget" name="stackedWidget">
+   <widget class="QStackedWidget" name="operations_stackedWidget">
     <property name="geometry">
      <rect>
       <x>260</x>
       <y>90</y>
-      <width>661</width>
+      <width>951</width>
       <height>741</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="PManage_customers">
      <widget class="QTableWidget" name="MC_table">
@@ -133,7 +133,7 @@ Requests</string>
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>651</width>
+        <width>781</width>
         <height>571</height>
        </rect>
       </property>
@@ -176,8 +176,8 @@ Requests</string>
      <widget class="QPushButton" name="deleteCustomer_button">
       <property name="geometry">
        <rect>
-        <x>520</x>
-        <y>600</y>
+        <x>650</x>
+        <y>590</y>
         <width>141</width>
         <height>71</height>
        </rect>
@@ -189,14 +189,14 @@ Requests</string>
      <widget class="QPushButton" name="addCustomer_button">
       <property name="geometry">
        <rect>
-        <x>350</x>
-        <y>600</y>
+        <x>330</x>
+        <y>590</y>
         <width>161</width>
         <height>71</height>
        </rect>
       </property>
       <property name="text">
-       <string>add customer</string>
+       <string>Add Customer</string>
       </property>
      </widget>
      <widget class="QTextEdit" name="firstName_textEdit">
@@ -277,15 +277,28 @@ Requests</string>
        <string>TC</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="editCustomer_button">
+      <property name="geometry">
+       <rect>
+        <x>500</x>
+        <y>590</y>
+        <width>141</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Edit Customer</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="PCustomer_finances">
-     <widget class="QTableWidget" name="tableWidget_4">
+     <widget class="QTableWidget" name="finances_table">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>0</y>
-        <width>651</width>
-        <height>701</height>
+        <y>10</y>
+        <width>901</width>
+        <height>661</height>
        </rect>
       </property>
       <column>
@@ -311,23 +324,47 @@ Requests</string>
      </widget>
     </widget>
     <widget class="QWidget" name="PCustomer_transactions">
-     <widget class="QTableWidget" name="tableWidget_2">
+     <widget class="QTableWidget" name="transactions_table">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
-        <width>651</width>
-        <height>681</height>
+        <y>40</y>
+        <width>941</width>
+        <height>691</height>
        </rect>
       </property>
+      <property name="iconSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <attribute name="horizontalHeaderMinimumSectionSize">
+       <number>65</number>
+      </attribute>
       <column>
        <property name="text">
-        <string>customerID</string>
+        <string>date</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>accID</string>
+        <string>source customer ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>recepient customer ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>source account</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>recepient account</string>
        </property>
       </column>
       <column>
@@ -340,15 +377,35 @@ Requests</string>
         <string>total</string>
        </property>
       </column>
+      <column>
+       <property name="text">
+        <string>source balance</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>recepient balance</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QComboBox" name="customer_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>720</x>
+        <y>10</y>
+        <width>231</width>
+        <height>20</height>
+       </rect>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="PCustomer_requests">
-     <widget class="QTableWidget" name="tableWidget_3">
+     <widget class="QTableWidget" name="customerRequests_table">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>641</width>
+        <width>911</width>
         <height>581</height>
        </rect>
       </property>
@@ -364,14 +421,14 @@ Requests</string>
       </column>
       <column>
        <property name="text">
-        <string>Description</string>
+        <string>account</string>
        </property>
       </column>
      </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="accept_button">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>230</x>
         <y>600</y>
         <width>171</width>
         <height>91</height>
@@ -381,7 +438,7 @@ Requests</string>
        <string>accept</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="reject_button">
       <property name="geometry">
        <rect>
         <x>480</x>
@@ -402,7 +459,7 @@ Requests</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>931</width>
+     <width>1232</width>
      <height>26</height>
     </rect>
    </property>
