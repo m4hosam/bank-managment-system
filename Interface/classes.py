@@ -176,7 +176,7 @@ class Customer:
         cursor.execute(
             '''SELECT a.acc_id, a.currency, a.balance 
             FROM account2 As a, userAccounts2 As u 
-            WHERE u.acc_id = a.acc_id AND u.cus_id = ?''', self.customer_id)
+            WHERE u.acc_id = a.acc_id AND u.cus_id = ? ''', self.customer_id)
         rows = cursor.fetchall()
         for row in rows:
             self.accounts.append(Account(row))
@@ -190,7 +190,7 @@ class Customer:
             ua.acc_id = a.acc_id and
             (t.src_id = a.acc_id or t.rsv_id = a.acc_id)  and
             c.id = ?
-            ORDER BY(t.trans_date)
+            ORDER BY(t.trans_date) DESC
             ''', self.customer_id)
         rows = cursor.fetchall()
         # print(rows)
@@ -259,7 +259,56 @@ class Transaction:
         return f"----\n({self.trans_no}, {self.trans_date},{ self.src_id}, {self.rsv_id}, {self.trans_type}, {self.total})\n---"
 
 
-# k = Customer(301)
-# q = k.list_transactions()
-# for i in q:
-#     print(i.toArray())
+def get_salary():
+    cursor.execute("SELECT val FROM Salary")
+    salary = cursor.fetchone()
+    return salary.val
+
+
+def set_salary(new_salary):
+    if(new_salary > 0):
+        cursor.execute(
+            '''UPDATE Salary SET val = ?''', new_salary)
+        connection.commit()
+
+
+def add_customer(fn, ln, e, p, tc, ad):
+    cursor.execute(
+        '''INSERT INTO customer2 
+        VALUES(?, ?, ?, ?, ?, ?)''', fn, ln, e, p, tc, ad)
+
+    connection.commit()
+    cursor.execute(
+        '''INSERT INTO customerStatus2
+        VALUES('ACTIVE')''')
+
+    cursor.execute(
+        '''SELECT MAX(id) AS LastID FROM customer2''')
+    cus_row = cursor.fetchone()
+    # print(cus_row.LastID)
+    cursor.execute(
+        '''SELECT clerk_id, COUNT(clerk_id) AS r_cus
+        FROM customerClerks2
+        GROUP BY clerk_id
+        ORDER BY r_cus''')
+    first_row = cursor.fetchone()
+    # print(first_row.clerk_id)
+    cursor.execute(
+        '''INSERT INTO customerClerks2
+        VALUES(?, ?)''', cus_row.LastID, first_row.clerk_id)
+    connection.commit()
+
+
+def add_currency(cur, rate):
+    cursor.execute(
+        '''INSERT INTO currency 
+        VALUES(?, ?)''', cur, rate)
+    connection.commit()
+
+
+def add_currency(cur, rate):
+    cursor.execute(
+        '''UPDATE currency 
+        SET exch_rate = ?
+        WHERE curr_code = ?''', rate, cur)
+    connection.commit()

@@ -1,50 +1,9 @@
-from locale import currency
 import sys
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
-from PyQt5 import QtCore, QtGui, QtWidgets
-
-from SQLconnection import cursor, connection
-
-from managerMain import Ui_ManagerWindow
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5 import QtWidgets
 from customerMain import Ui_CustomerWindow
-from homeMain import Ui_MainWindow
-import classes
 
 from classes import Account, Customer, searchAccountIDs, getCurrencies, req_open
-
-
-def check_user_input(input, type):
-    try:
-        u_id = int(input)
-        if(type == "customer"):
-            cursor.execute(
-                'SELECT * FROM customer2 WHERE customer2.id = ?', u_id)
-            row = cursor.fetchone()
-            if(not row):
-                msg.setWindowTitle("Error")
-                msg.setText("Customer Not Found")
-                x = msg.exec_()
-                return "Customer Not Found"
-            else:
-                return u_id
-
-        elif(type == "clerk"):
-            cursor.execute(
-                'SELECT * FROM customerClerks2 WHERE customerClerks2.clerk_id = ?', u_id)
-            row = cursor.fetchone()
-            if(not row):
-                msg.setWindowTitle("Error")
-                msg.setText("Clerk not Found")
-                x = msg.exec_()
-                return "Clerk not Found"
-            else:
-                return u_id
-    except ValueError:
-        msg.setWindowTitle("Error")
-        msg.setText("Invalid input")
-        x = msg.exec_()
-        return "invalid"
 
 
 class CustomerWindow:
@@ -238,12 +197,10 @@ class CustomerWindow:
             if(c != -1 and (int(selected_acc.balance) - int(amount)) >= 0):
                 selected_acc.withdraw(amount)
             else:
-                msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR")
                 x = msg.exec_()
         except ValueError:
-            msg.setWindowTitle("Error")
-            msg.setText("Invalid")
+            msg.setText("Invalid input")
             x = msg.exec_()
         # Redirect to list accounts home page
         self.ui.listAccounts_radio.setChecked(True)
@@ -259,12 +216,10 @@ class CustomerWindow:
             if(c != -1 and type(amount) == int):
                 selected_acc.deposit(amount)
             else:
-                msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR")
                 x = msg.exec_()
         except ValueError:
-            msg.setWindowTitle("Error")
-            msg.setText("Invalid")
+            msg.setText("Invalid input")
             x = msg.exec_()
 
         self.ui.listAccounts_radio.setChecked(True)
@@ -282,11 +237,9 @@ class CustomerWindow:
             if(c != -1 and (int(selected_acc.balance) - int(total)) >= 0 and receiver_acc != 1):
                 selected_acc.money_transfer(receiver_acc, total)
             else:
-                msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR or acc error")
                 x = msg.exec_()
         except ValueError:
-            msg.setWindowTitle("Error")
             msg.setText("Invalid input")
             x = msg.exec_()
         self.ui.listAccounts_radio.setChecked(True)
@@ -304,7 +257,6 @@ class CustomerWindow:
             else:
                 selected_acc.req_delete()
         else:
-            msg.setWindowTitle("Error")
             msg.setText("Selection Error")
             x = msg.exec_()
         # label at the end of delete widget to inform the user
@@ -329,189 +281,9 @@ class CustomerWindow:
             ad = str(self.ui.Address_textEdit.toPlainText())
             cur_cus.update(fn, ln, e, p, tc, ad)
         except ValueError:
-            msg.setWindowTitle("Error")
             msg.setText("Invalid input")
             x = msg.exec_()
 
         self.display_customer_info()
         self.ui.listAccounts_radio.setChecked(True)
         self.showListAccounts()
-
-
-class ManagerWindow:
-    def __init__(self):
-        self.main_window = QMainWindow()
-        self.ui = Ui_ManagerWindow()
-        self.ui.setupUi(self.main_window)
-
-        self.ui.stackedWidget.setCurrentWidget(self.ui.main_widget)
-
-        self.ui.addNewCurrency.clicked.connect(self.showAddNewCurrency)
-        self.ui.updateCurrency.clicked.connect(self.showUpdateCurrency)
-        self.ui.update_clerk.clicked.connect(self.showUpdate_clerk)
-        self.ui.update_interest.clicked.connect(self.showUpdate_interest)
-        self.ui.add_customer.clicked.connect(self.showAdd_customer)
-        self.ui.view_transactions.clicked.connect(self.showView_transactions)
-        self.ui.main.clicked.connect(self.showMain)
-
-        self.display_update_currency()
-        self.display_update_interest()
-        self.display_update_salary()
-        self.display_summery()
-
-        self.ui.pushButton.clicked.connect(self.add_customer)
-        self.ui.add_currency_btn.clicked.connect(self.add_currency)
-        self.ui.update_currency_btn.clicked.connect(self.update_currency)
-
-    def show(self):
-        self.main_window.show()
-
-    def showAddNewCurrency(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.add_currency_widget)
-
-    def showUpdateCurrency(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.update_currency_widget)
-
-    def showUpdate_clerk(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.update_clerk_widget)
-
-    def showUpdate_interest(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.update_interest_widget)
-
-    def showAdd_customer(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.add_customer_widget)
-
-    def showMain(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.main_widget)
-
-    def showView_transactions(self):
-        self.ui.stackedWidget.setCurrentWidget(
-            self.ui.view_transactions_widget)
-
-    def display_summery(self):
-        self.ui.income_value.setText("404")
-        self.ui.expenses_value.setText("404")
-        self.ui.profit_value.setText("404")
-        self.ui.balance_value.setText("404")
-
-    def display_update_currency(self):
-        self.ui.currency_comboBox.clear()
-        currencies = getCurrencies()
-        self.ui.currency_comboBox.addItems(currencies)
-
-    def display_update_interest(self):
-        self.ui.previous_interest_value.setText("404")
-
-    def display_update_salary(self):
-        salary = classes.get_salary()
-        self.ui.previous_salary_value.setText(str(salary))
-
-    def add_customer(self):
-        try:
-            fn = str(self.ui.FN_textEdit.toPlainText())
-            ln = str(self.ui.LN_textEdit.toPlainText())
-            tc = str(self.ui.TC_textEdit.toPlainText())
-            p = str(self.ui.phoneNum_textEdit.toPlainText())
-            e = str(self.ui.email_textEdit.toPlainText())
-            ad = str(self.ui.Address_textEdit.toPlainText())
-            if not fn:
-                raise ValueError()
-            if not ln:
-                raise ValueError()
-            if not tc:
-                raise ValueError()
-            if not p:
-                raise ValueError()
-            if not e:
-                raise ValueError()
-            if not ad:
-                raise ValueError()
-            classes.add_customer(fn, ln, e, p, tc, ad)
-            msg.setWindowTitle("Susccess")
-            msg.setText("Customer Has Been Added")
-            x = msg.exec_()
-        except ValueError:
-            msg.setWindowTitle("Error")
-            msg.setText("Invalid input")
-            x = msg.exec_()
-
-    def add_currency(self):
-        try:
-            cur_code = str(self.ui.currency_code_value.toPlainText())
-            ex = str(self.ui.new_er_value.toPlainText())
-            if not cur_code:
-                raise ValueError()
-            if not ex:
-                raise ValueError()
-            classes.add_currency(cur_code, ex)
-            msg.setWindowTitle("Susccess")
-            msg.setText("Currency Has Been Added")
-            x = msg.exec_()
-        except ValueError:
-            msg.setWindowTitle("Error")
-            msg.setText("Invalid input")
-            x = msg.exec_()
-        except:
-            msg.setWindowTitle("Error")
-            msg.setText("Currency already Exists")
-            x = msg.exec_()
-
-    def update_currency(self):
-        try:
-            u_rate = str(self.ui.update_er_value.toPlainText())
-            currency = str(self.ui.currency_comboBox.currentText())
-            if not u_rate:
-                raise ValueError()
-            classes.add_currency(currency, u_rate)
-            msg.setWindowTitle("Susccess")
-            msg.setText("Currency Has Been Updated")
-            x = msg.exec_()
-        except ValueError:
-            msg.setWindowTitle("Error")
-            msg.setText("Invalid input")
-            x = msg.exec_()
-
-
-class MainWindow:
-    def __init__(self):
-        self.main_window = QMainWindow()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.main_window)
-        self.ui.cutomer_btn.clicked.connect(self.customer_clicked)
-        self.ui.clerk_btn.clicked.connect(self.clerk_clicked)
-        self.ui.manager_btn.clicked.connect(self.manager_clicked)
-
-    def show(self):
-        self.main_window.show()
-
-    def hide(self):
-        self.main_window.hide()
-
-    def customer_clicked(self):
-        check = self.ui.customer_id_value.text()
-        customer_id = check_user_input(check, "customer")
-        if(type(customer_id) == int):
-            # main_win.hide()
-            CustomerWindow.cus_id = customer_id
-            customer_win.show()
-
-    def clerk_clicked(self):
-        ck_id = self.ui.clerk_id_value.text()
-        check = check_user_input(ck_id, "customer")
-        if(type(check) == int):
-            main_win.hide()
-            # clerk_window.show()
-
-    def manager_clicked(self):
-        # main_win.hide()
-        manager_window.show()
-
-
-app = QApplication(sys.argv)
-msg = QMessageBox()
-# msg.setWindowTitle("Error")
-main_win = MainWindow()
-customer_win = CustomerWindow()
-manager_window = ManagerWindow()
-main_win.show()
-sys.exit(app.exec_())
