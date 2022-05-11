@@ -163,7 +163,7 @@ VALUES(9009,307);*/
 /*
 CREATE TABLE transactions2(
 	trans_no INT IDENTITY(1,1) PRIMARY KEY,
-	trans_date DATE,
+	trans_date DATETIME,
 	src_id INT,
 	rsv_id INT,
 	trans_type VARCHAR(50),
