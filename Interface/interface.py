@@ -10,6 +10,7 @@ from managerMain import Ui_ManagerWindow
 from customerMain import Ui_CustomerWindow
 from homeMain import Ui_MainWindow
 import classes
+from clerk_ui_functions import clerk_Window
 
 from classes import Account, Customer, searchAccountIDs, getCurrencies, req_open
 
@@ -427,7 +428,7 @@ class ManagerWindow:
             if not ad:
                 raise ValueError()
             classes.add_customer(fn, ln, e, p, tc, ad)
-            msg.setWindowTitle("Susccess")
+            msg.setWindowTitle("Success")
             msg.setText("Customer Has Been Added")
             x = msg.exec_()
         except ValueError:
@@ -497,10 +498,15 @@ class MainWindow:
 
     def clerk_clicked(self):
         ck_id = self.ui.clerk_id_value.text()
-        check = check_user_input(ck_id, "customer")
+        check = check_user_input(ck_id, "clerk")
+        print(check)
         if(type(check) == int):
             main_win.hide()
-            # clerk_window.show()
+            #clerk_Window.clerk_id = check
+            clerk_window.setClerkID(check)
+            clerk_window.init_window()
+            #print(clerk_window.clerk_id)
+            clerk_window.show()
 
     def manager_clicked(self):
         # main_win.hide()
@@ -513,5 +519,6 @@ msg = QMessageBox()
 main_win = MainWindow()
 customer_win = CustomerWindow()
 manager_window = ManagerWindow()
+clerk_window = clerk_Window()
 main_win.show()
 sys.exit(app.exec_())
