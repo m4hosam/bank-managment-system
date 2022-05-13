@@ -146,7 +146,7 @@ c.id = ua.cus_id and ua.cus_id IN(SELECT cc.cus_id
 				cc.clerk_id = {self.clerk_id})
 GROUP BY(c.id) ORDER BY c.id
 --TRANSACTIONS BY CLERK'S CUSTOMERS + CUSTOMER ID'S
-SELECT DISTINCT tr.*, ua1.cus_id, ua2.cus_id
+/*SELECT DISTINCT tr.*, ua1.cus_id, ua2.cus_id
 FROM transactions2 tr
 LEFT JOIN account2 a1
 ON tr.src_id = a1.acc_id
@@ -160,4 +160,16 @@ LEFT JOIN customerClerks2 cc1
 ON cc1.cus_id = ua1.cus_id
 LEFT JOIN customerClerks2 cc2
 ON cc2.cus_id = ua2.cus_id
-WHERE cc2.clerk_id = 3 or cc2.clerk_id = 3;
+WHERE cc2.clerk_id = 3 or cc2.clerk_id = 3;*/
+
+SELECT DISTINCT tr.*, ua1.cus_id, ua2.cus_id
+FROM transactions2 tr
+LEFT JOIN account2 a1
+ON tr.src_id = a1.acc_id
+LEFT JOIN account2 a2
+ON tr.rsv_id = a2.acc_id
+LEFT JOIN userAccounts2 ua1
+ON ua1.acc_id = src_id
+LEFT JOIN userAccounts2 ua2
+ON ua2.acc_id = rsv_id
+WHERE ua1.cus_id = 302 or ua2.cus_id = 3;
