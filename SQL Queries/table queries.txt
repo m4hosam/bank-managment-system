@@ -200,3 +200,21 @@ VALUES('R-OPEN');*/
 SELECT acc_id AS LastID 
 FROM accountStatus2 
 WHERE acc_id = @@Identity;
+
+/*CREATE TABLE loanRequests (
+	req_no INT PRIMARY KEY IDENTITY(1,1),
+	cus_id INT,
+	ay INT,
+	anapara FLOAT,
+	faiz FLOAT,
+	FOREIGN KEY(cus_id) REFERENCES customer2(id)
+)
+
+CREATE TABLE others(
+	clerk_salary FLOAT,
+	gecikme_faiz FLOAT,
+	tarih DATE
+)*/
+
+INSERT INTO others 
+VALUES(3000, 5, 16-5-2022)
