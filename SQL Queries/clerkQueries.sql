@@ -99,15 +99,12 @@ WHERE ua1.cus_id = {cus_id} or ua2.cus_id = {cus_id};
 SELECT DISTINCT ua.cus_id, SUM(total * ISNULL(exch_rate,1))
 FROM transactions2 tr, currency curr, account2 a, userAccounts2 ua
 WHERE ua.acc_id = tr.src_id and
-tr.src_id = a.acc_id and
-a.currency = curr.curr_code
-and (rsv_id NOT IN (SELECT acc_id
-		FROM userAccounts2 ua2 
-		WHERE ua.cus_id = ua2.cus_id)
-OR rsv_id IS NULL) and ua.cus_id IN(SELECT cc.cus_id
-				FROM customerClerks2 cc
-				WHERE ua.cus_id = cc.cus_id and
-				cc.clerk_id = {self.clerk_id})
+    tr.src_id = a.acc_id and
+    a.currency = curr.curr_code
+    and (rsv_id NOT IN (SELECT acc_id
+                        FROM userAccounts2 ua2 
+                        WHERE ua.cus_id = ua2.cus_id)
+    OR rsv_id IS NULL) and ua.cus_id = 302
 GROUP BY(ua.cus_id) ORDER BY ua.cus_id;
 
 --income
@@ -140,10 +137,9 @@ SELECT c.id, SUM(exch_rate * balance)  as totalBalance
 FROM currency cur, userAccounts2 ua, account2 a, customer2 c
 WHERE ua.acc_id = a.acc_id and
 a.currency = cur.curr_code and
-c.id = ua.cus_id and ua.cus_id IN(SELECT cc.cus_id
-				FROM customerClerks2 cc
-				WHERE ua.cus_id = cc.cus_id and
-				cc.clerk_id = {self.clerk_id})
+c.id = ua.cus_id and 
+c.id = 301
+
 GROUP BY(c.id) ORDER BY c.id
 --TRANSACTIONS BY CLERK'S CUSTOMERS + CUSTOMER ID'S
 /*SELECT DISTINCT tr.*, ua1.cus_id, ua2.cus_id
