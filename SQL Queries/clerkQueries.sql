@@ -172,4 +172,4 @@ LEFT JOIN userAccounts2 ua1
 ON ua1.acc_id = src_id
 LEFT JOIN userAccounts2 ua2
 ON ua2.acc_id = rsv_id
-WHERE ua1.cus_id = 302 or ua2.cus_id = 3;
+WHERE ua1.cus_id = 302 or ua2.cus_id = 302;
