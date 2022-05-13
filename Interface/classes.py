@@ -1,3 +1,4 @@
+from numpy import arctanh
 from SQLconnection import cursor, connection
 import datetime
 
@@ -55,6 +56,61 @@ def req_open(currency, cus_id):
     connection.commit()
 
 
+def get_salary():
+    cursor.execute("SELECT val FROM Salary")
+    salary = cursor.fetchone()
+    return salary.val
+
+
+def set_salary(new_salary):
+    if(new_salary > 0):
+        cursor.execute(
+            '''UPDATE Salary SET val = ?''', new_salary)
+        connection.commit()
+
+
+def add_customer(fn, ln, e, p, tc, ad):
+    cursor.execute(
+        '''INSERT INTO customer2 
+        VALUES(?, ?, ?, ?, ?, ?)''', fn, ln, e, p, tc, ad)
+
+    connection.commit()
+    cursor.execute(
+        '''INSERT INTO customerStatus2
+        VALUES('ACTIVE')''')
+
+    cursor.execute(
+        '''SELECT MAX(id) AS LastID FROM customer2''')
+    cus_row = cursor.fetchone()
+    # print(cus_row.LastID)
+    cursor.execute(
+        '''SELECT clerk_id, COUNT(clerk_id) AS r_cus
+        FROM customerClerks2
+        GROUP BY clerk_id
+        ORDER BY r_cus''')
+    first_row = cursor.fetchone()
+    # print(first_row.clerk_id)
+    cursor.execute(
+        '''INSERT INTO customerClerks2
+        VALUES(?, ?)''', cus_row.LastID, first_row.clerk_id)
+    connection.commit()
+
+
+def add_currency(cur, rate):
+    cursor.execute(
+        '''INSERT INTO currency 
+        VALUES(?, ?)''', cur, rate)
+    connection.commit()
+
+
+def add_currency(cur, rate):
+    cursor.execute(
+        '''UPDATE currency 
+        SET exch_rate = ?
+        WHERE curr_code = ?''', rate, cur)
+    connection.commit()
+
+
 class Account:
     def __init__(self, account):
         self.account_id = account.acc_id
@@ -101,8 +157,8 @@ class Account:
             t = datetime.datetime.now()
             cursor.execute(
                 '''INSERT INTO transactions2 
-                VALUES( ? ,?,NULL,'withdraw',?)
-                ''', t, self.account_id, value)
+                VALUES( ? ,?,NULL,'withdraw',?, ?, NULL)
+                ''', t, self.account_id, value, self.balance)
             connection.commit()
 
     def deposit(self, value):
@@ -114,8 +170,8 @@ class Account:
         t = datetime.datetime.now()
         cursor.execute(
             '''INSERT INTO transactions2 
-            VALUES( ? ,NULL,?,'deposit',?)
-            ''', t, self.account_id, value)
+            VALUES( ? ,NULL,?,'deposit',?, NULL, ?)
+            ''', t, self.account_id, value, self.balance)
         connection.commit()
 
     def money_transfer(self, receiver, amount):
@@ -144,8 +200,8 @@ class Account:
                  WHERE account2.acc_id = ?''', new_balance2, receiver.account_id)
             cursor.execute(
                 '''INSERT INTO transactions2 
-                VALUES( ? ,?,?,'money transfer',?)
-                ''', t, self.account_id, receiver.account_id, amount)
+                VALUES( ? ,?,?,'money transfer',?, ?, ?)
+                ''', t, self.account_id, receiver.account_id, amount, new_balance1, new_balance2)
             connection.commit()
         else:
             print("Transfer Denied Classes Related")
@@ -160,7 +216,10 @@ class Customer:
         self.transactions = []
         self.customer_id = customer_id
         cursor.execute(
-            'SELECT * FROM customer2 WHERE customer2.id = ?', customer_id)
+            '''SELECT customer2.* FROM customer2, customerStatus2 
+            WHERE customerStatus2.cus_id = customer2.id and
+            customer2.id = ? and
+            customerStatus2.cus_status = 'ACTIVE' ''', customer_id)
         row = cursor.fetchone()
         if(not row):
             print("Customer not Found Class Related")
@@ -197,6 +256,17 @@ class Customer:
         for row in rows:
             self.transactions.append(Transaction(row, self.customer_id))
         return self.transactions
+
+    def to_array(self):
+        arr = []
+        arr.append(self.customer_id)
+        arr.append(self.first_name)
+        arr.append(self.last_name)
+        arr.append(self.email)
+        arr.append(self.phone)
+        arr.append(self.TC)
+        arr.append(self.address)
+        return arr
 
     def update(self, first_name, last_name, email, phone, tc, address):
         self.first_name = first_name
@@ -259,56 +329,91 @@ class Transaction:
         return f"----\n({self.trans_no}, {self.trans_date},{ self.src_id}, {self.rsv_id}, {self.trans_type}, {self.total})\n---"
 
 
-def get_salary():
-    cursor.execute("SELECT val FROM Salary")
-    salary = cursor.fetchone()
-    return salary.val
+class Clerk:
+    def __init__(self, clerk_id):
+        self.customers = []
+        self.transactions = []
+        self.clerk_id = clerk_id
 
-
-def set_salary(new_salary):
-    if(new_salary > 0):
         cursor.execute(
-            '''UPDATE Salary SET val = ?''', new_salary)
-        connection.commit()
+            '''SELECT c.*
+            FROM customer2 c, customerStatus2 cs , customerClerks2 cc
+            WHERE cs.cus_id = cc.cus_id and
+            cc.clerk_id = ? and
+            c.id = cs.cus_id and 
+            cus_status = 'ACTIVE' ''', self.clerk_id)
+        rows = cursor.fetchall()
+        if(not rows):
+            print("Clerk not Found Class Related")
+        else:
+            for row in rows:
+                self.customers.append(str(row.id))
+
+    def list_transactions(self, cus_id):
+        cursor.execute(
+            '''
+            SELECT DISTINCT tr.*,  ua1.cus_id src_cus, ua2.cus_id rsv_cus
+            FROM transactions2 tr
+            LEFT JOIN account2 a1
+            ON tr.src_id = a1.acc_id
+            LEFT JOIN account2 a2
+            ON tr.rsv_id = a2.acc_id
+            LEFT JOIN userAccounts2 ua1
+            ON ua1.acc_id = src_id
+            LEFT JOIN userAccounts2 ua2
+            ON ua2.acc_id = rsv_id
+            WHERE ua1.cus_id = ? or ua2.cus_id =?
+            ''', cus_id, cus_id)
+        rows = cursor.fetchall()
+        for row in rows:
+            self.transactions.append(self.to_array(row))
+        return self.transactions
+
+    def list_customer(self):
+        ar = []
+        for c in self.customers:
+            ar.append(Customer(c))
+        return ar
+
+    # def list_expenses(self):
+    #     cursor.execute(
+    #         '''
+
+    #         ''', cus_id, cus_id)
+    #     rows = cursor.fetchall()
+    #     for row in rows:
+    #         self.transactions.append(self.to_array(row))
+
+    def to_array(self, row):
+        arr = []
+        arr.append(str(row.trans_date))
+        # source customer
+        if(row.trans_type == "deposit"):
+            src = f"customer"
+            arr.append(src)
+            arr.append(row.rsv_cus)
+            arr.append(src)
+            arr.append(row.rsv_id)
+        elif(row.trans_type == "withdraw"):
+            rsv = f"customer"
+            arr.append(row.src_cus)
+            arr.append(rsv)
+            arr.append(row.src_id)
+            arr.append(rsv)
+        elif(row.trans_type == "money transfer"):
+            arr.append(row.src_cus)
+            arr.append(row.rsv_cus)
+            arr.append(row.src_id)
+            arr.append(row.rsv_id)
+
+        arr.append(row.trans_type)
+        arr.append(row.total)
+        arr.append(row.src_balance)
+        arr.append(row.rsv_balance)
+        return arr
 
 
-def add_customer(fn, ln, e, p, tc, ad):
-    cursor.execute(
-        '''INSERT INTO customer2 
-        VALUES(?, ?, ?, ?, ?, ?)''', fn, ln, e, p, tc, ad)
-
-    connection.commit()
-    cursor.execute(
-        '''INSERT INTO customerStatus2
-        VALUES('ACTIVE')''')
-
-    cursor.execute(
-        '''SELECT MAX(id) AS LastID FROM customer2''')
-    cus_row = cursor.fetchone()
-    # print(cus_row.LastID)
-    cursor.execute(
-        '''SELECT clerk_id, COUNT(clerk_id) AS r_cus
-        FROM customerClerks2
-        GROUP BY clerk_id
-        ORDER BY r_cus''')
-    first_row = cursor.fetchone()
-    # print(first_row.clerk_id)
-    cursor.execute(
-        '''INSERT INTO customerClerks2
-        VALUES(?, ?)''', cus_row.LastID, first_row.clerk_id)
-    connection.commit()
-
-
-def add_currency(cur, rate):
-    cursor.execute(
-        '''INSERT INTO currency 
-        VALUES(?, ?)''', cur, rate)
-    connection.commit()
-
-
-def add_currency(cur, rate):
-    cursor.execute(
-        '''UPDATE currency 
-        SET exch_rate = ?
-        WHERE curr_code = ?''', rate, cur)
-    connection.commit()
+c = Clerk(2)
+print(c.customers)
+print(c.list_customer()[0].first_name)
+# print(c.list_transactions(301))

@@ -20,7 +20,10 @@ def check_user_input(input, type):
         u_id = int(input)
         if(type == "customer"):
             cursor.execute(
-                'SELECT * FROM customer2 WHERE customer2.id = ?', u_id)
+                '''SELECT customer2.* FROM customer2, customerStatus2 
+                WHERE customerStatus2.cus_id = customer2.id and
+                customer2.id = ? and
+                customerStatus2.cus_status = 'ACTIVE''', u_id)
             row = cursor.fetchone()
             if(not row):
                 msg.setWindowTitle("Error")
@@ -501,11 +504,9 @@ class MainWindow:
         check = check_user_input(ck_id, "clerk")
         print(check)
         if(type(check) == int):
-            main_win.hide()
-            #clerk_Window.clerk_id = check
+            # main_win.hide()
             clerk_window.setClerkID(check)
             clerk_window.init_window()
-            #print(clerk_window.clerk_id)
             clerk_window.show()
 
     def manager_clicked(self):
