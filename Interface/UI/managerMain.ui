@@ -1566,14 +1566,79 @@ p, li { white-space: pre-wrap; }
      </widget>
     </widget>
     <widget class="QWidget" name="page">
-     <widget class="QCalendarWidget" name="calendarWidget">
+     <widget class="QLabel" name="label_14">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>60</y>
-        <width>392</width>
-        <height>236</height>
+        <x>70</x>
+        <y>260</y>
+        <width>241</width>
+        <height>61</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Bir Ay  ilerletebilmek</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>270</y>
+        <width>141</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>ilerlet</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>120</y>
+        <width>131</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Current Day: </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>130</y>
+        <width>291</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:red</string>
+      </property>
+      <property name="text">
+       <string>13/6/2022</string>
       </property>
      </widget>
     </widget>
@@ -1581,8 +1646,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QTableWidget" name="transactions_tableWidget">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>160</y>
+        <x>30</x>
+        <y>90</y>
         <width>561</width>
         <height>321</height>
        </rect>
@@ -1683,8 +1748,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="pushButton_2">
       <property name="geometry">
        <rect>
-        <x>470</x>
-        <y>60</y>
+        <x>510</x>
+        <y>30</y>
         <width>71</width>
         <height>41</height>
        </rect>
@@ -1702,7 +1767,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>110</x>
-        <y>70</y>
+        <y>40</y>
         <width>141</width>
         <height>31</height>
        </rect>
@@ -1719,8 +1784,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>60</y>
+        <x>20</x>
+        <y>30</y>
         <width>81</width>
         <height>41</height>
        </rect>
@@ -1737,8 +1802,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>50</y>
+        <x>320</x>
+        <y>20</y>
         <width>131</width>
         <height>61</height>
        </rect>
@@ -1750,6 +1815,84 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>Transaction</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>430</y>
+        <width>191</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>DeadLock Sayisi:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>480</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Islemler: </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>480</y>
+        <width>451</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:green</string>
+      </property>
+      <property name="text">
+       <string>(1-3-4) , (2-7) , (8-9)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>430</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:green</string>
+      </property>
+      <property name="text">
+       <string>3</string>
       </property>
      </widget>
     </widget>

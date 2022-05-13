@@ -190,6 +190,20 @@ Information</string>
       </widget>
      </item>
      <item>
+      <widget class="QRadioButton" name="addCustomer_radio">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>ADD Customer</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QRadioButton" name="viewCusRequests_radio">
        <property name="font">
         <font>
@@ -206,7 +220,7 @@ Requests</string>
      </item>
     </layout>
    </widget>
-   <widget class="QStackedWidget" name="edit_cus_widget">
+   <widget class="QStackedWidget" name="operations_stackedWidget">
     <property name="geometry">
      <rect>
       <x>260</x>
