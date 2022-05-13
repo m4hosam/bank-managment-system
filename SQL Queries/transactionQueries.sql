@@ -23,3 +23,9 @@ ON tr.rsv_id = a1.acc_id
 LEFT JOIN userAccounts2 ua2
 ON ua2.acc_id = tr.rsv_id
 WHERE tr.src_id IS NULL;
+*************************************************
+ALTER TABLE transactions2
+ADD src_balance FLOAT;
+
+ALTER TABLE transactions2
+ADD rsv_balance FLOAT;
