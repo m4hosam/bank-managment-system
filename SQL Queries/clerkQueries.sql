@@ -117,19 +117,18 @@ ua1.acc_id = src_id and
 ua2.acc_id = rsv_id and
 c1.curr_code = a1.currency and 
 c2.curr_code = a2.currency and src_id not in(SELECT acc_id
-					FROM userAccounts2 ua
-					WHERE ua.cus_id = ua2.cus_id)
+                                            FROM userAccounts2 ua
+                                            WHERE ua.cus_id = ua2.cus_id)
 GROUP BY(ua2.cus_id)) t1
 FULL OUTER JOIN (
 SELECT ua1.cus_id, SUM(total * c1.exch_rate) income
 FROM transactions2 tr, account2 a1, userAccounts2 ua1, currency c1
 WHERE src_id IS NULL and
-rsv_id = ua1.acc_id and
-ua1.acc_id = a1.acc_id and
-a1.currency = c1.curr_code
+    rsv_id = ua1.acc_id and
+    ua1.acc_id = a1.acc_id and
+    a1.currency = c1.curr_code
 GROUP BY(ua1.cus_id)) t2 on t2.cus_id = t1.cus_id, customerClerks2 cc
-WHERE t1.cus_id = cc.cus_id and
-cc.clerk_id = {self.clerk_id}
+WHERE t1.cus_id = cc.cus_id and t1.cus_id = 302
 GROUP BY(t1.cus_id) ORDER BY t1.cus_id;
 
 --total balance
@@ -139,8 +138,8 @@ WHERE ua.acc_id = a.acc_id and
 a.currency = cur.curr_code and
 c.id = ua.cus_id and 
 c.id = 301
-
 GROUP BY(c.id) ORDER BY c.id
+
 --TRANSACTIONS BY CLERK'S CUSTOMERS + CUSTOMER ID'S
 /*SELECT DISTINCT tr.*, ua1.cus_id, ua2.cus_id
 FROM transactions2 tr
