@@ -24,7 +24,7 @@ class clerk_Window:
         
 
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PManage_customers)
-        #self.init_customer_comboBox()
+        self.init_customer_comboBox()
         self.ui.reject_button.clicked.connect(self.rejectRequest)
         self.ui.accept_button.clicked.connect(self.acceptRequest)
         
@@ -43,13 +43,15 @@ class clerk_Window:
         
 
     def init_customer_comboBox(self):
+        print(self.clerk_id)
         #clerk_id = 3
         cursor.execute(u'''SELECT cus_id 
                         FROM customerClerks2
                         WHERE clerk_id = (?);''', self.clerk_id)
-
-        for i in cursor:
-            self.ui.customer_comboBox.addItem(str(i[0]))
+        rows = cursor.fetchall()
+        for i in rows:
+            print(str(i.cus_id))
+            self.ui.customer_comboBox.addItem(str(i.cus_id))
 
     def init_window(self):
         self.ui.clerk_id.setText(str(self.clerk_id))
@@ -105,7 +107,7 @@ class clerk_Window:
         cus_id = self.ui.customer_comboBox.currentText()
         row = 0
         self.ui.transactions_table.setRowCount(50)
-        query = f'''SELECT DISTINCT trans_date, ua1.cus_id src_cus, ua2.cus_id rsv_cus, src_id, rsv_id, trans_type, total, (a1.balance - total) src_balance, (a2.balance + total *(c1.exch_rate /c2.exch_rate)) rsv_balance 
+        query = f'''SELECT DISTINCT trans_date, ua1.cus_id src_cus, ua2.cus_id rsv_cus, src_id, rsv_id, trans_type, total, (a1.balance - total) src_balance, (a2.balance + total *(ISNULL(c1.exch_rate,c2.exch_rate) / (ISNULL(c2.exch_rate,c1.exch_rate)))) as rsv_balance 
                     FROM transactions2 tr
                     LEFT JOIN account2 a1
                     ON tr.src_id = a1.acc_id
@@ -177,7 +179,7 @@ class clerk_Window:
 
     def deleteCustomer(self):
         if(not self.ui.MC_table.item(self.ui.MC_table.currentRow(),0)): return
-        cus_toBeDeleted = int(self.ui.MC_table.item(self.ui.MC_table.currentRow(),0).text())
+        cus_toBeDeleted = str(self.ui.MC_table.item(self.ui.MC_table.currentRow(),0).text())
         #if(not cus_toBeDeleted): return
         print(cus_toBeDeleted)
         self.ui.MC_table.removeRow(self.ui.MC_table.currentRow())
@@ -185,7 +187,8 @@ class clerk_Window:
         cursor.execute(f''' UPDATE customerStatus2
                         SET cus_status = 'DELETED'
                         WHERE cus_id = {cus_toBeDeleted};''')
-        cursor.execute()
+        cursor.commit()
+        #cursor.execute()
 
         #cursor.commit()
         self.row -= 1
