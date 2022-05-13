@@ -29,3 +29,16 @@ ADD src_balance FLOAT;
 
 ALTER TABLE transactions2
 ADD rsv_balance FLOAT;
+
+CREATE TABLE transactions2(
+	trans_no INT IDENTITY(1,1) PRIMARY KEY,
+	trans_date DATETIME,
+	src_id INT,
+	rsv_id INT,
+	trans_type VARCHAR(50),
+	total FLOAT,
+	src_balance FLOAT,
+	rsv_balance FLOAT,
+	FOREIGN KEY(src_id) REFERENCES account2(acc_id),
+	FOREIGN KEY(rsv_id) REFERENCES account2(acc_id),
+);
