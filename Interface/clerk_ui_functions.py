@@ -124,6 +124,7 @@ class clerk_Window:
         self.ui.transactions_table.setRowCount(len(transactions))
         counter = 0
         for transaction in transactions:
+            # print(transaction)
             for i in range(0, 9):
                 self.ui.transactions_table.setItem(
                     counter, i, QtWidgets.QTableWidgetItem(str(transaction[i])))
@@ -186,13 +187,17 @@ class clerk_Window:
             msg.setText("Selection or overlimit ERROR")
             x = msg.exec_()
         else:
-            self.ui.MC_table.removeRow(self.ui.MC_table.currentRow())
-            self.ui.MC_table.setRowCount(50)
-            cursor.execute(f''' UPDATE customerStatus2
-                            SET cus_status = 'DELETED'
-                            WHERE cus_id = {cus_toBeDeleted};''')
-            cursor.commit()
-            self.row -= 1
+            o = classes.delete_customer(cus_toBeDeleted)
+            if(o == -1):
+                msg.setWindowTitle("Error")
+                msg.setText("Customer Can't be deleted\nbalance isn't 0")
+                x = msg.exec_()
+            else:
+                msg.setWindowTitle("Success")
+                msg.setText("Customer has been deleted")
+                x = msg.exec_()
+            self.displayCustomers()
+            self.init_customer_comboBox()
 
     def displayFinances(self):
         cus_id = self.ui.customer_comboBox.currentText()

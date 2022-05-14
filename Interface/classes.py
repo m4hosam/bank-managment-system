@@ -98,6 +98,24 @@ def add_customer(fn, ln, e, p, tc, ad):
     connection.commit()
 
 
+def delete_customer(cus_id):
+    c = Customer(cus_id)
+    accounts = c.list_accounts()
+    for account in accounts:
+        if(account.balance != 0):
+            return -1
+
+    cursor.execute(f''' UPDATE customerStatus2
+                    SET cus_status = 'DELETED'
+                    WHERE cus_id = {cus_id};''')
+    for account in accounts:
+        cursor.execute(f''' UPDATE accountStatus2
+                        SET acc_status = 'DELETED'
+                        WHERE acc_id ={ account.account_id };''')
+    connection.commit()
+    return 0
+
+
 def add_currency(cur, rate):
     cursor.execute(
         '''INSERT INTO currency 
@@ -247,16 +265,21 @@ class Customer:
 
     def list_transactions(self):
         cursor.execute(
-            '''SELECT DISTINCT t.trans_no, t.trans_date, t.src_id, t.rsv_id, t.trans_type, t.total
-            FROM customer2 c, transactions2 t, account2 a, userAccounts2 ua
-            WHERE c.id = ua.cus_id and
-            ua.acc_id = a.acc_id and
-            (t.src_id = a.acc_id or t.rsv_id = a.acc_id)  and
-            c.id = ?
-            ORDER BY(t.trans_date) DESC
-            ''', self.customer_id)
+            '''
+            SELECT DISTINCT tr.*,  ua1.cus_id src_cus, ua2.cus_id rsv_cus
+            FROM transactions2 tr
+            LEFT JOIN account2 a1
+            ON tr.src_id = a1.acc_id
+            LEFT JOIN account2 a2
+            ON tr.rsv_id = a2.acc_id
+            LEFT JOIN userAccounts2 ua1
+            ON ua1.acc_id = src_id
+            LEFT JOIN userAccounts2 ua2
+            ON ua2.acc_id = rsv_id
+            WHERE ua1.cus_id = ? or ua2.cus_id =?
+            ORDER BY tr.trans_date DESC
+            ''', self.customer_id, self.customer_id)
         rows = cursor.fetchall()
-        # print(rows)
         for row in rows:
             self.transactions.append(Transaction(row, self.customer_id))
         return self.transactions
@@ -299,35 +322,69 @@ class Customer:
 
 class Transaction:
     def __init__(self, ob, cus_id):
+        self.cus_id = cus_id
         self.trans_no = ob.trans_no
         self.trans_date = ob.trans_date
         self.src_id = ob.src_id
         self.rsv_id = ob.rsv_id
         self.trans_type = ob.trans_type
         self.total = ob.total
-        self.cus_id = cus_id
+        self.src_balance = ob.src_balance
+        self.rsv_balance = ob.rsv_balance
+        self.src_cus = ob.src_cus
+        self.rsv_cus = ob.rsv_cus
         self.arr = []
 
-    def toArray(self):
-        self.arr.append(self.trans_no)
-        self.arr.append(str(self.trans_date))
+    def to_array_customer(self):
+        self.arr.insert(0, str(self.trans_date))
+        self.arr.insert(3, self.trans_type)
 
         if(self.trans_type == "deposit"):
             src = f"customer {self.cus_id}"
-            self.arr.append(src)
-            self.arr.append(self.rsv_id)
+            self.arr.insert(1, src)
+            self.arr.insert(2, self.rsv_id)
+            self.arr.insert(4, f"+{str(self.total)}")
         elif(self.trans_type == "withdraw"):
             rsv = f"customer {self.cus_id}"
-            self.arr.append(self.src_id)
-            self.arr.append(rsv)
-        elif(self.trans_type == "money transfer"):
-            self.arr.append(self.src_id)
-            self.arr.append(self.rsv_id)
-        # last one is the bank loan
+            self.arr.insert(1, self.src_id)
+            self.arr.insert(2, rsv)
+            self.arr.insert(4, f"-{str(self.total)}")
+        elif(self.trans_type == 'money transfer'):
 
-        self.arr.append(self.trans_type)
-        self.arr.append(self.total)
+            self.arr.insert(1, self.src_id)
+            self.arr.insert(2, self.rsv_id)
+            if(int(self.src_cus) == int(self.rsv_cus) and int(self.src_cus) == int(self.cus_id)):
+                self.arr.insert(4, self.total)
+            elif(int(self.src_cus) == int(self.cus_id)):
+                # print("11111111: ", self.total)
+                self.arr.insert(4, f"-{str(self.total)}")
+            elif(int(self.rsv_cus) == int(self.cus_id)):
+                self.arr.insert(4, f"+{str(self.total)}")
+
+        # last one is the bank loan
+        # print("before11", self.arr)
         return self.arr
+
+    def to_array_clerk(self):
+        ar = self.to_array_customer()
+
+        k = "customer"
+        if(self.trans_type == "deposit"):
+            ar.append(k)
+            ar.append(self.rsv_balance)
+            ar.append(k)
+            ar.append(self.rsv_cus)
+        elif(self.trans_type == "withdraw"):
+            ar.append(self.src_balance)
+            ar.append(k)
+            ar.append(self.src_cus)
+            ar.append(k)
+        elif(self.trans_type == "money transfer"):
+            ar.append(self.src_balance)
+            ar.append(self.rsv_balance)
+            ar.append(self.src_cus)
+            ar.append(self.rsv_cus)
+        return ar
 
     def __str__(self):
         return f"----\n({self.trans_no}, {self.trans_date},{ self.src_id}, {self.rsv_id}, {self.trans_type}, {self.total})\n---"
@@ -354,23 +411,12 @@ class Clerk:
                 self.customers.append(str(row.id))
 
     def list_transactions(self, cus_id):
-        cursor.execute(
-            '''
-            SELECT DISTINCT tr.*,  ua1.cus_id src_cus, ua2.cus_id rsv_cus
-            FROM transactions2 tr
-            LEFT JOIN account2 a1
-            ON tr.src_id = a1.acc_id
-            LEFT JOIN account2 a2
-            ON tr.rsv_id = a2.acc_id
-            LEFT JOIN userAccounts2 ua1
-            ON ua1.acc_id = src_id
-            LEFT JOIN userAccounts2 ua2
-            ON ua2.acc_id = rsv_id
-            WHERE ua1.cus_id = ? or ua2.cus_id =?
-            ''', cus_id, cus_id)
-        rows = cursor.fetchall()
-        for row in rows:
-            self.transactions.append(self.to_array(row))
+        c = Customer(cus_id)
+        ar = c.list_transactions()
+        for item in ar:
+            self.transactions.append(item.to_array_clerk())
+            # print(item.to_array_clerk())
+
         return self.transactions
 
     def list_customer(self):
@@ -378,43 +424,6 @@ class Clerk:
         for c in self.customers:
             ar.append(Customer(c))
         return ar
-
-    # def list_expenses(self):
-    #     cursor.execute(
-    #         '''
-
-    #         ''', cus_id, cus_id)
-    #     rows = cursor.fetchall()
-    #     for row in rows:
-    #         self.transactions.append(self.to_array(row))
-
-    def to_array(self, row):
-        arr = []
-        arr.append(str(row.trans_date))
-        # source customer
-        if(row.trans_type == "deposit"):
-            src = f"customer"
-            arr.append(src)
-            arr.append(row.rsv_cus)
-            arr.append(src)
-            arr.append(row.rsv_id)
-        elif(row.trans_type == "withdraw"):
-            rsv = f"customer"
-            arr.append(row.src_cus)
-            arr.append(rsv)
-            arr.append(row.src_id)
-            arr.append(rsv)
-        elif(row.trans_type == "money transfer"):
-            arr.append(row.src_cus)
-            arr.append(row.rsv_cus)
-            arr.append(row.src_id)
-            arr.append(row.rsv_id)
-
-        arr.append(row.trans_type)
-        arr.append(row.total)
-        arr.append(row.src_balance)
-        arr.append(row.rsv_balance)
-        return arr
 
 
 # c = Clerk(2)
