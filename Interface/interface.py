@@ -244,13 +244,17 @@ class CustomerWindow:
 
     def requestLoan(self):
         # req_loan_btn m_edit l_edit
-        amount = self.ui.l_edit.text()
-        months = self.ui.m_edit.text()
-        print(months, amount, self.cus_id)
-        query = f'''INSERT INTO loanRequests(cus_id, ay, anapara) VALUES({self.cus_id},{months},{amount})'''
-        cursor.execute(query)
-        cursor.commit()
-
+        try:
+            amount = int(self.ui.l_edit.text())
+            months = int(self.ui.m_edit.text())
+            print(months, amount, self.cus_id)
+            query = f'''INSERT INTO loanRequests(cus_id, ay, anapara) VALUES({self.cus_id},{months},{amount})'''
+            cursor.execute(query)
+            cursor.commit()
+        except ValueError:
+            msg.setWindowTitle("Error")
+            msg.setText("Invalid")
+            x = msg.exec_()
     def withdraw(self):
         cur_cus = Customer(self.cus_id)
         accounts = cur_cus.list_accounts()
@@ -261,6 +265,8 @@ class CustomerWindow:
             amount = float(self.ui.withdraw_textEdit.toPlainText())
             if(c != -1 and (float(selected_acc.balance) - float(amount)) >= 0):
                 selected_acc.withdraw(amount)
+                self.ui.listAccounts_radio.setChecked(True)
+                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR")
@@ -270,8 +276,6 @@ class CustomerWindow:
             msg.setText("Invalid")
             x = msg.exec_()
         # Redirect to list accounts home page
-        self.ui.listAccounts_radio.setChecked(True)
-        self.showListAccounts()
 
     def deposit(self):
         cur_cus_d = Customer(self.cus_id)
@@ -282,6 +286,8 @@ class CustomerWindow:
             selected_acc = accounts_d[c]
             if(c != -1):
                 selected_acc.deposit(amount)
+                self.ui.listAccounts_radio.setChecked(True)
+                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR")
@@ -290,9 +296,6 @@ class CustomerWindow:
             msg.setWindowTitle("Error")
             msg.setText("Invalid")
             x = msg.exec_()
-
-        self.ui.listAccounts_radio.setChecked(True)
-        self.showListAccounts()
 
     def money_transfer(self):
         cur_cus_m = Customer(self.cus_id)
@@ -305,6 +308,8 @@ class CustomerWindow:
             selected_acc = accounts_m[c]
             if(c != -1 and (float(selected_acc.balance) - float(total)) >= 0 and receiver_acc != 1):
                 selected_acc.money_transfer(receiver_acc, total)
+                self.ui.listAccounts_radio.setChecked(True)
+                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR \nor acc error")
@@ -313,8 +318,6 @@ class CustomerWindow:
             msg.setWindowTitle("Error")
             msg.setText("Invalid input")
             x = msg.exec_()
-        self.ui.listAccounts_radio.setChecked(True)
-        self.showListAccounts()
 
     def delete(self):
         cur_cus = Customer(self.cus_id)
@@ -459,23 +462,23 @@ class ManagerWindow:
 
     def diplayFinances(self):
         incomeQuery = '''
-                SELECT lp.total + dep.total bank_income
-                FROM (SELECT SUM(total) total
-                FROM transactions2 tr
-                WHERE trans_type = 'loan payment') as lp,
-                (SELECT SUM(t2.total*exch_rate) total
-                FROM transactions2 t2, account2 a, currency cur
-                WHERE (t2.trans_type = 'deposit' and
+                    SELECT ISNULL(lp.total,0) + ISNULL(dep.total,0) income
+                    FROM (SELECT SUM(total) total
+                    FROM transactions2 tr
+                    WHERE trans_type = 'loan payment') as lp,
+                    (SELECT SUM(t2.total*exch_rate) total
+                    FROM transactions2 t2, account2 a, currency cur
+                    WHERE (t2.trans_type = 'deposit' and
                     t2.rsv_id = a.acc_id and
                     cur.curr_code = a.currency)) as dep'''
 
-        expensesQuery = '''SELECT lt.total + wd.total bank_expense
-                    FROM (SELECT SUM(total) total
-                    FROM transactions2 tr
-                    WHERE trans_type = 'loan takeout') as lt,
-                    (SELECT SUM(t2.total*exch_rate) total
-                    FROM transactions2 t2, account2 a, currency cur
-                    WHERE (t2.trans_type = 'withdraw' and
+        expensesQuery = '''SELECT ISNULL(lt.total,0) + ISNULL(wd.total,0) expense
+                        FROM (SELECT SUM(total) total
+                        FROM transactions2 tr
+                        WHERE trans_type = 'loan takeout') as lt,
+                        (SELECT SUM(t2.total*exch_rate) total
+                        FROM transactions2 t2, account2 a, currency cur
+                        WHERE (t2.trans_type = 'withdraw' and
                         t2.src_id = a.acc_id and
                         cur.curr_code = a.currency)) as wd'''
 
@@ -648,7 +651,7 @@ class MainWindow:
         print(check)
         if(type(check) == int):
             # main_win.hide()
-            clerk_window.setClerkID(check)
+            clerk_window.clerk_id = check
             clerk_window.init_window()
             clerk_window.show()
 

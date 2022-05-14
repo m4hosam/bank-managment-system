@@ -58,8 +58,13 @@ class clerk_Window:
 
     def init_customer_comboBox(self):
         # clerk_id = 3
+        c = self.ui.customer_comboBox.count()
         clerk = Clerk(self.clerk_id)
+        # self.ui.customer_comboBox.clear()
         self.ui.customer_comboBox.addItems(clerk.customers)
+        if (c != 0):
+            for i in range(0, c):
+                self.ui.customer_comboBox.removeItem(0)
 
     def init_window(self):
         self.ui.clerk_id.setText(str(self.clerk_id))
@@ -300,9 +305,9 @@ class clerk_Window:
         currentCustomer = Customer(cus_id)
         self.ui.FN_textEdit.setMarkdown(currentCustomer.first_name)
         self.ui.LN_textEdit.setMarkdown(currentCustomer.last_name)
-        self.ui.TC_textEdit.setMarkdown(currentCustomer.TC)
-        self.ui.phoneNum_textEdit.setMarkdown(currentCustomer.phone)
-        self.ui.email_textEdit.setMarkdown(currentCustomer.email)
+        self.ui.TC_textEdit_2.setMarkdown(currentCustomer.TC)
+        self.ui.phoneNum_textEdit_2.setMarkdown(currentCustomer.phone)
+        self.ui.email_textEdit_2.setMarkdown(currentCustomer.email)
         self.ui.Address_textEdit.setMarkdown(currentCustomer.address)
 
     def acceptRequest(self):
@@ -359,9 +364,9 @@ class clerk_Window:
         try:
             fn = str(self.ui.FN_textEdit.toPlainText())
             ln = str(self.ui.LN_textEdit.toPlainText())
-            tc = str(self.ui.TC_textEdit.toPlainText())
-            p = str(self.ui.phoneNum_textEdit.toPlainText())
-            e = str(self.ui.email_textEdit.toPlainText())
+            tc = str(self.ui.TC_textEdit_2.toPlainText())
+            p = str(self.ui.phoneNum_textEdit_2.toPlainText())
+            e = str(self.ui.email_textEdit_2.toPlainText())
             ad = str(self.ui.Address_textEdit.toPlainText())
             cur_cus.update(fn, ln, e, p, tc, ad)
         except ValueError:
@@ -372,10 +377,3 @@ class clerk_Window:
         self.displayCustomers()
         self.ui.manageCustomers_radio.setChecked(True)
         self.show_manageCustomers()
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    main_win = clerk_Window()
-    main_win.show()
-    sys.exit(app.exec_())

@@ -59,16 +59,17 @@ def req_open(currency, cus_id):
 
 
 def get_salary():
-    cursor.execute("SELECT val FROM Salary")
+    cursor.execute("SELECT clerk_salary FROM others;")
     salary = cursor.fetchone()
-    return salary.val
+    return salary.clerk_salary
 
 
 def set_salary(new_salary):
     if(new_salary > 0):
         cursor.execute(
-            '''UPDATE Salary SET val = ?''', new_salary)
-        connection.commit()
+            '''UPDATE others
+            SET clerk_salary = ?''', new_salary)
+    connection.commit()
 
 
 def add_customer(fn, ln, e, p, tc, ad):
