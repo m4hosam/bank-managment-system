@@ -71,7 +71,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>8</number>
+     <number>7</number>
     </property>
     <widget class="QWidget" name="main_widget">
      <widget class="QWidget" name="layoutWidget">
@@ -1566,79 +1566,27 @@ p, li { white-space: pre-wrap; }
      </widget>
     </widget>
     <widget class="QWidget" name="skip_month_widget">
-     <widget class="QLabel" name="label_14">
+     <widget class="QCalendarWidget" name="calendarWidget">
       <property name="geometry">
        <rect>
-        <x>70</x>
-        <y>260</y>
-        <width>241</width>
-        <height>61</height>
+        <x>90</x>
+        <y>40</y>
+        <width>461</width>
+        <height>271</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Bir Ay  ilerletebilmek</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="changeDate_button">
       <property name="geometry">
        <rect>
-        <x>370</x>
-        <y>270</y>
-        <width>141</width>
-        <height>41</height>
+        <x>260</x>
+        <y>350</y>
+        <width>151</width>
+        <height>71</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
       <property name="text">
-       <string>ilerlet</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_15">
-      <property name="geometry">
-       <rect>
-        <x>70</x>
-        <y>120</y>
-        <width>131</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Current Day: </string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_16">
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>130</y>
-        <width>291</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color:red</string>
-      </property>
-      <property name="text">
-       <string>13/6/2022</string>
+       <string>Change Date</string>
       </property>
      </widget>
     </widget>
@@ -1846,7 +1794,7 @@ p, li { white-space: pre-wrap; }
        <string notr="true">color:green</string>
       </property>
       <property name="text">
-       <string>(1-3-4) , (2-7) , (8-9)</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="deadLockNumber_label">
@@ -1867,7 +1815,7 @@ p, li { white-space: pre-wrap; }
        <string notr="true">color:green</string>
       </property>
       <property name="text">
-       <string>3</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -1982,14 +1930,14 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="add_customer_2">
+      <widget class="QRadioButton" name="calendar_radio">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>Ay iletmek</string>
+        <string>Ay ilerletmek</string>
        </property>
       </widget>
      </item>

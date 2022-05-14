@@ -5,7 +5,12 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
 from datetime import date
+import datetime
+
+import QtDesigner
 from SQLconnection import cursor, connection
+from deadlock import findDeadlocks
+from PyQt5.QtCore import QDate, QTime, QDateTime, Qt
 
 from managerMain import Ui_ManagerWindow
 from customerMain import Ui_CustomerWindow
@@ -97,7 +102,6 @@ class CustomerWindow:
             self.ui.PMoneyTransfer)
 
     def showLoanInfo(self):
-        self.display_info()
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PLoanInfo)
 
     def showReqLoan(self):
@@ -243,32 +247,14 @@ class CustomerWindow:
                     counter, i, QtWidgets.QTableWidgetItem(str(t[i])))
             counter += 1
 
-    def display_info(self):
-        print("found------------")
-        loans = classes.get_loan_info(self.cus_id)
-        # self.ui.loan_value_label.setText(str(loans[0]))
-        print(len(loans))
-        self.ui.loan_info_tableWidget.setRowCount(len(loans))
-        counter = 0
-        for loan in loans:
-            for i in range(0, 6):
-                self.ui.loan_info_tableWidget.setItem(
-                    counter, i, QtWidgets.QTableWidgetItem(str(loan[i])))
-            counter += 1
-
     def requestLoan(self):
         # req_loan_btn m_edit l_edit
-        try:
-            amount = int(self.ui.l_edit.text())
-            months = int(self.ui.m_edit.text())
-            print(months, amount, self.cus_id)
-            query = f'''INSERT INTO loanRequests(cus_id, ay, anapara) VALUES({self.cus_id},{months},{amount})'''
-            cursor.execute(query)
-            cursor.commit()
-        except ValueError:
-            msg.setWindowTitle("Error")
-            msg.setText("Invalid")
-            x = msg.exec_()
+        amount = self.ui.l_edit.text()
+        months = self.ui.m_edit.text()
+        print(months, amount, self.cus_id)
+        query = f'''INSERT INTO loanRequests(cus_id, ay, anapara) VALUES({self.cus_id},{months},{amount})'''
+        cursor.execute(query)
+        cursor.commit()
 
     def withdraw(self):
         cur_cus = Customer(self.cus_id)
@@ -280,8 +266,6 @@ class CustomerWindow:
             amount = float(self.ui.withdraw_textEdit.toPlainText())
             if(c != -1 and (float(selected_acc.balance) - float(amount)) >= 0):
                 selected_acc.withdraw(amount)
-                self.ui.listAccounts_radio.setChecked(True)
-                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR")
@@ -291,6 +275,8 @@ class CustomerWindow:
             msg.setText("Invalid")
             x = msg.exec_()
         # Redirect to list accounts home page
+        self.ui.listAccounts_radio.setChecked(True)
+        self.showListAccounts()
 
     def deposit(self):
         cur_cus_d = Customer(self.cus_id)
@@ -301,8 +287,6 @@ class CustomerWindow:
             selected_acc = accounts_d[c]
             if(c != -1):
                 selected_acc.deposit(amount)
-                self.ui.listAccounts_radio.setChecked(True)
-                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR")
@@ -311,6 +295,9 @@ class CustomerWindow:
             msg.setWindowTitle("Error")
             msg.setText("Invalid")
             x = msg.exec_()
+
+        self.ui.listAccounts_radio.setChecked(True)
+        self.showListAccounts()
 
     def money_transfer(self):
         cur_cus_m = Customer(self.cus_id)
@@ -323,8 +310,6 @@ class CustomerWindow:
             selected_acc = accounts_m[c]
             if(c != -1 and (float(selected_acc.balance) - float(total)) >= 0 and receiver_acc != 1):
                 selected_acc.money_transfer(receiver_acc, total)
-                self.ui.listAccounts_radio.setChecked(True)
-                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR \nor acc error")
@@ -333,6 +318,8 @@ class CustomerWindow:
             msg.setWindowTitle("Error")
             msg.setText("Invalid input")
             x = msg.exec_()
+        self.ui.listAccounts_radio.setChecked(True)
+        self.showListAccounts()
 
     def delete(self):
         cur_cus = Customer(self.cus_id)
@@ -379,6 +366,8 @@ class CustomerWindow:
         self.ui.listAccounts_radio.setChecked(True)
         self.showListAccounts()
 
+    
+
 
 class ManagerWindow:
     def __init__(self):
@@ -395,6 +384,7 @@ class ManagerWindow:
         self.ui.add_customer.clicked.connect(self.showAdd_customer)
         self.ui.view_transactions.clicked.connect(self.showView_transactions)
         self.ui.main.clicked.connect(self.showMain)
+        self.ui.calendar_radio.clicked.connect(self.showCalender)
 
         self.display_update_currency()
         self.display_update_interest()
@@ -402,12 +392,14 @@ class ManagerWindow:
         self.display_summery()
         self.init_LoadRequests()
 
+        self.ui.list_button.clicked.connect(self.displayTransactions)
         self.ui.pushButton.clicked.connect(self.add_customer)
         self.ui.loan_requests.clicked.connect(self.showLoanRequests)
         self.ui.add_currency_btn.clicked.connect(self.add_currency)
         self.ui.update_currency_btn.clicked.connect(self.update_currency)
         self.ui.accept_loan_btn.clicked.connect(self.acceptRequest)
         self.ui.reject_loan_btn.clicked.connect(self.rejectRequest)
+        self.ui.changeDate_button.clicked.connect(self.changeDate)
 
     def show(self):
         self.diplayFinances()
@@ -424,6 +416,9 @@ class ManagerWindow:
 
     def showUpdate_interest(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.update_interest_widget)
+
+    def showCalender(self):
+        self.ui.stackedWidget.setCurrentWidget(self.ui.skip_month_widget)
 
     def showAdd_customer(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.add_customer_widget)
@@ -477,23 +472,23 @@ class ManagerWindow:
 
     def diplayFinances(self):
         incomeQuery = '''
-                    SELECT ISNULL(lp.total,0) + ISNULL(dep.total,0) income
-                    FROM (SELECT SUM(total) total
-                    FROM transactions2 tr
-                    WHERE trans_type = 'loan payment') as lp,
-                    (SELECT SUM(t2.total*exch_rate) total
-                    FROM transactions2 t2, account2 a, currency cur
-                    WHERE (t2.trans_type = 'deposit' and
+                SELECT lp.total + dep.total bank_income
+                FROM (SELECT SUM(total) total
+                FROM transactions2 tr
+                WHERE trans_type = 'loan payment') as lp,
+                (SELECT SUM(t2.total*exch_rate) total
+                FROM transactions2 t2, account2 a, currency cur
+                WHERE (t2.trans_type = 'deposit' and
                     t2.rsv_id = a.acc_id and
                     cur.curr_code = a.currency)) as dep'''
 
-        expensesQuery = '''SELECT ISNULL(lt.total,0) + ISNULL(wd.total,0) expense
-                        FROM (SELECT SUM(total) total
-                        FROM transactions2 tr
-                        WHERE trans_type = 'loan takeout') as lt,
-                        (SELECT SUM(t2.total*exch_rate) total
-                        FROM transactions2 t2, account2 a, currency cur
-                        WHERE (t2.trans_type = 'withdraw' and
+        expensesQuery = '''SELECT lt.total + wd.total bank_expense
+                    FROM (SELECT SUM(total) total
+                    FROM transactions2 tr
+                    WHERE trans_type = 'loan takeout') as lt,
+                    (SELECT SUM(t2.total*exch_rate) total
+                    FROM transactions2 t2, account2 a, currency cur
+                    WHERE (t2.trans_type = 'withdraw' and
                         t2.src_id = a.acc_id and
                         cur.curr_code = a.currency)) as wd'''
 
@@ -636,6 +631,55 @@ class ManagerWindow:
             msg.setText("Please select row")
             x = msg.exec_()
 
+    def displayTransactions(self):
+        self.ui.transactions_tableWidget.setRowCount(0)
+        transNo = self.ui.transactionsNumber_lineEdit.text()
+        self.ui.transactions_tableWidget.setRowCount(int(transNo))
+        #print(transNo)
+
+        query = f'''SELECT TOP {transNo} * FROM transactions2
+                ORDER BY trans_date DESC'''
+        cursor.execute(query)
+        row = 0
+        for tpl in cursor:
+            for col in range(0,8):
+                self.ui.transactions_tableWidget.setItem(row, col, QtWidgets.QTableWidgetItem(str(tpl[col])))
+            row += 1
+        
+        deadlocks = findDeadlocks(transNo)
+        string = ', '.join(str(item) for item in deadlocks)
+        #print(deadlocks)
+        #print(string)
+        self.ui.deadLockNumber_label.setText(str(len(deadlocks)))
+        self.ui.deadLocks_lable.setText(string)
+    
+    def changeDate(self):
+        try:
+            date = self.ui.calendarWidget.selectedDate()
+            cursor.execute('''SELECT tarih FROM others''')
+            currDate = cursor.fetchone()
+            oldDate = currDate[0]
+
+            dt_obj = datetime.datetime.strptime(oldDate, '%Y-%m-%d').date()
+
+            #d1 = datetime.datetime(2018, 5, 3)
+            #d2 = datetime.datetime(2018, 6, 1)
+            #print(dt_obj>date)
+            if dt_obj>date:
+                raise ValueError()
+            else:
+                newDate = date.toString(Qt.ISODate)
+                print(newDate)
+                #print(date)
+                cursor.execute(f'''UPDATE others
+                            SET tarih = '{newDate}'; ''')
+                cursor.commit()
+        except ValueError:
+            msg.setWindowTitle("Error")
+            msg.setText("Invalid")
+            x = msg.exec_()
+        #setSelectedDate
+        #selectedDate
 
 class MainWindow:
     def __init__(self):
@@ -666,13 +710,15 @@ class MainWindow:
         print(check)
         if(type(check) == int):
             # main_win.hide()
-            clerk_window.clerk_id = check
+            clerk_window.setClerkID(check)
             clerk_window.init_window()
             clerk_window.show()
 
     def manager_clicked(self):
         # main_win.hide()
         manager_window.show()
+    
+    
 
 
 app = QApplication(sys.argv)
