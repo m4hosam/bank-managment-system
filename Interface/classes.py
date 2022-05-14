@@ -28,7 +28,9 @@ def getCurrencyRate(currency):
 def searchAccountIDs(r_id):
     cursor.execute(
         '''SELECT a.acc_id, a.currency, a.balance 
-            FROM account2 As a''')
+        FROM account2 As a, accountStatus2 AS s
+        WHERE s.acc_id = a.acc_id AND
+        s.acc_status = 'ACTIVE' ''')
     rows = cursor.fetchall()
     for row in rows:
         if(r_id == row.acc_id):
@@ -148,7 +150,7 @@ class Account:
         return self.currency
 
     def withdraw(self, value):
-        self.balance = int(self.balance) - int(value)
+        self.balance = float(self.balance) - float(value)
         if(self.balance >= 0):
             cursor.execute(
                 '''UPDATE account2
@@ -162,7 +164,7 @@ class Account:
             connection.commit()
 
     def deposit(self, value):
-        self.balance = int(self.balance) + int(value)
+        self.balance = float(self.balance) + float(value)
         cursor.execute(
             '''UPDATE account2
             SET account2.balance = ?
@@ -179,13 +181,13 @@ class Account:
         t = datetime.datetime.now()
         c1 = self.currency
         c2 = receiver.currency
-        new_balance1 = int(self.balance) - int(amount)
+        new_balance1 = float(self.balance) - float(amount)
         if (c1 == c2):
-            new_balance2 = int(receiver.balance) + int(amount)
+            new_balance2 = float(receiver.balance) + float(amount)
         else:
             amount_in_TL = float(amount) * getCurrencyRate(c1)
             amount_in_c = amount_in_TL / getCurrencyRate(c2)
-            new_balance2 = int(receiver.balance) + amount_in_c
+            new_balance2 = float(receiver.balance) + amount_in_c
 
         if(new_balance1 >= 0):
             # Source balance Change
@@ -234,8 +236,10 @@ class Customer:
     def list_accounts(self):
         cursor.execute(
             '''SELECT a.acc_id, a.currency, a.balance 
-            FROM account2 As a, userAccounts2 As u 
-            WHERE u.acc_id = a.acc_id AND u.cus_id = ? ''', self.customer_id)
+            FROM account2 As a, userAccounts2 As u, accountStatus2 As s
+            WHERE u.acc_id = a.acc_id AND u.cus_id = ? AND
+            s.acc_id = a.acc_id AND
+            s.acc_status = 'ACTIVE'; ''', self.customer_id)
         rows = cursor.fetchall()
         for row in rows:
             self.accounts.append(Account(row))
@@ -413,7 +417,7 @@ class Clerk:
         return arr
 
 
-c = Clerk(2)
-print(c.customers)
-print(c.list_customer()[0].first_name)
+# c = Clerk(2)
+# print(c.customers)
+# print(c.list_customer()[0].first_name)
 # print(c.list_transactions(301))

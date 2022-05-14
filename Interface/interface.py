@@ -23,7 +23,7 @@ def check_user_input(input, type):
                 '''SELECT customer2.* FROM customer2, customerStatus2 
                 WHERE customerStatus2.cus_id = customer2.id and
                 customer2.id = ? and
-                customerStatus2.cus_status = 'ACTIVE''', u_id)
+                customerStatus2.cus_status = 'ACTIVE' ''', u_id)
             row = cursor.fetchone()
             if(not row):
                 msg.setWindowTitle("Error")
@@ -238,8 +238,8 @@ class CustomerWindow:
         selected_acc = accounts[c]
 
         try:
-            amount = int(self.ui.withdraw_textEdit.toPlainText())
-            if(c != -1 and (int(selected_acc.balance) - int(amount)) >= 0):
+            amount = float(self.ui.withdraw_textEdit.toPlainText())
+            if(c != -1 and (float(selected_acc.balance) - float(amount)) >= 0):
                 selected_acc.withdraw(amount)
             else:
                 msg.setWindowTitle("Error")
@@ -258,9 +258,9 @@ class CustomerWindow:
         accounts_d = cur_cus_d.list_accounts()
         c = self.ui.deposit_tableWidget.currentRow()
         try:
-            amount = int(self.ui.deposit_textEdit.toPlainText())
+            amount = float(self.ui.deposit_textEdit.toPlainText())
             selected_acc = accounts_d[c]
-            if(c != -1 and type(amount) == int):
+            if(c != -1):
                 selected_acc.deposit(amount)
             else:
                 msg.setWindowTitle("Error")
@@ -280,14 +280,14 @@ class CustomerWindow:
         c = self.ui.MT_listAccounts_tableWidget.currentRow()
         try:
             receiver_id = int(self.ui.to_account_no.toPlainText())
-            total = int(self.ui.MT_total_textEdit.toPlainText())
+            total = float(self.ui.MT_total_textEdit.toPlainText())
             receiver_acc = searchAccountIDs(receiver_id)
             selected_acc = accounts_m[c]
-            if(c != -1 and (int(selected_acc.balance) - int(total)) >= 0 and receiver_acc != 1):
+            if(c != -1 and (float(selected_acc.balance) - float(total)) >= 0 and receiver_acc != 1):
                 selected_acc.money_transfer(receiver_acc, total)
             else:
                 msg.setWindowTitle("Error")
-                msg.setText("Selection or overlimit ERROR or acc error")
+                msg.setText("Selection or overlimit ERROR \nor acc error")
                 x = msg.exec_()
         except ValueError:
             msg.setWindowTitle("Error")

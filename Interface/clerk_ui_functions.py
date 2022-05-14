@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMainWindow
 from matplotlib.widgets import Widget
 from SQLconnection import cursor, connection
 import classes
-from classes import Clerk
+from classes import Clerk, Customer
 
 from ui_clerk import Ui_MainWindow
 
@@ -50,8 +50,11 @@ class clerk_Window:
             self.displayFinances)
         self.ui.customer_comboBox.currentTextChanged.connect(
             self.displayFinances)
+        self.ui.customer_comboBox.currentTextChanged.connect(
+            self.display_customer_info)
 
         self.ui.addCustomer_button.clicked.connect(self.addCustomer)
+        self.ui.edit_save_button.clicked.connect(self.edit_info)
 
     def init_customer_comboBox(self):
         # clerk_id = 3
@@ -192,7 +195,6 @@ class clerk_Window:
             self.row -= 1
 
     def displayFinances(self):
-        clerk = Clerk(self.clerk_id)
         cus_id = self.ui.customer_comboBox.currentText()
         self.ui.finances_table.setRowCount(0)
         self.ui.finances_table.setRowCount(50)
@@ -288,6 +290,16 @@ class clerk_Window:
                     row, col, QtWidgets.QTableWidgetItem(str(i[col])))
             row += 1
 
+    def display_customer_info(self):
+        cus_id = int(self.ui.customer_comboBox.currentText())
+        currentCustomer = Customer(cus_id)
+        self.ui.FN_textEdit.setMarkdown(currentCustomer.first_name)
+        self.ui.LN_textEdit.setMarkdown(currentCustomer.last_name)
+        self.ui.TC_textEdit.setMarkdown(currentCustomer.TC)
+        self.ui.phoneNum_textEdit.setMarkdown(currentCustomer.phone)
+        self.ui.email_textEdit.setMarkdown(currentCustomer.email)
+        self.ui.Address_textEdit.setMarkdown(currentCustomer.address)
+
     def acceptRequest(self):
         msg = QMessageBox()
         acc_id = self.ui.customerRequests_table.item(
@@ -335,6 +347,26 @@ class clerk_Window:
         msg.setText("Request Has Been Rejected")
         x = msg.exec_()
         self.displayCustomerRequests()
+
+    def edit_info(self):
+        cus_id = int(self.ui.customer_comboBox.currentText())
+        cur_cus = Customer(cus_id)
+        try:
+            fn = str(self.ui.FN_textEdit.toPlainText())
+            ln = str(self.ui.LN_textEdit.toPlainText())
+            tc = str(self.ui.TC_textEdit.toPlainText())
+            p = str(self.ui.phoneNum_textEdit.toPlainText())
+            e = str(self.ui.email_textEdit.toPlainText())
+            ad = str(self.ui.Address_textEdit.toPlainText())
+            cur_cus.update(fn, ln, e, p, tc, ad)
+        except ValueError:
+            msg.setWindowTitle("Error")
+            msg.setText("Invalid input")
+            x = msg.exec_()
+
+        self.displayCustomers()
+        self.ui.manageCustomers_radio.setChecked(True)
+        self.show_manageCustomers()
 
 
 if __name__ == '__main__':
