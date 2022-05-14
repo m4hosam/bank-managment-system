@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
 from datetime import date
 from SQLconnection import cursor, connection
-from deadlock import findDeadlocks
 
 from managerMain import Ui_ManagerWindow
 from customerMain import Ui_CustomerWindow
@@ -98,6 +97,7 @@ class CustomerWindow:
             self.ui.PMoneyTransfer)
 
     def showLoanInfo(self):
+        self.display_info()
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PLoanInfo)
 
     def showReqLoan(self):
@@ -243,14 +243,32 @@ class CustomerWindow:
                     counter, i, QtWidgets.QTableWidgetItem(str(t[i])))
             counter += 1
 
+    def display_info(self):
+        print("found------------")
+        loans = classes.get_loan_info(self.cus_id)
+        # self.ui.loan_value_label.setText(str(loans[0]))
+        print(len(loans))
+        self.ui.loan_info_tableWidget.setRowCount(len(loans))
+        counter = 0
+        for loan in loans:
+            for i in range(0, 6):
+                self.ui.loan_info_tableWidget.setItem(
+                    counter, i, QtWidgets.QTableWidgetItem(str(loan[i])))
+            counter += 1
+
     def requestLoan(self):
         # req_loan_btn m_edit l_edit
-        amount = self.ui.l_edit.text()
-        months = self.ui.m_edit.text()
-        print(months, amount, self.cus_id)
-        query = f'''INSERT INTO loanRequests(cus_id, ay, anapara) VALUES({self.cus_id},{months},{amount})'''
-        cursor.execute(query)
-        cursor.commit()
+        try:
+            amount = int(self.ui.l_edit.text())
+            months = int(self.ui.m_edit.text())
+            print(months, amount, self.cus_id)
+            query = f'''INSERT INTO loanRequests(cus_id, ay, anapara) VALUES({self.cus_id},{months},{amount})'''
+            cursor.execute(query)
+            cursor.commit()
+        except ValueError:
+            msg.setWindowTitle("Error")
+            msg.setText("Invalid")
+            x = msg.exec_()
 
     def withdraw(self):
         cur_cus = Customer(self.cus_id)
@@ -262,6 +280,8 @@ class CustomerWindow:
             amount = float(self.ui.withdraw_textEdit.toPlainText())
             if(c != -1 and (float(selected_acc.balance) - float(amount)) >= 0):
                 selected_acc.withdraw(amount)
+                self.ui.listAccounts_radio.setChecked(True)
+                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR")
@@ -271,8 +291,6 @@ class CustomerWindow:
             msg.setText("Invalid")
             x = msg.exec_()
         # Redirect to list accounts home page
-        self.ui.listAccounts_radio.setChecked(True)
-        self.showListAccounts()
 
     def deposit(self):
         cur_cus_d = Customer(self.cus_id)
@@ -283,6 +301,8 @@ class CustomerWindow:
             selected_acc = accounts_d[c]
             if(c != -1):
                 selected_acc.deposit(amount)
+                self.ui.listAccounts_radio.setChecked(True)
+                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR")
@@ -291,9 +311,6 @@ class CustomerWindow:
             msg.setWindowTitle("Error")
             msg.setText("Invalid")
             x = msg.exec_()
-
-        self.ui.listAccounts_radio.setChecked(True)
-        self.showListAccounts()
 
     def money_transfer(self):
         cur_cus_m = Customer(self.cus_id)
@@ -306,6 +323,8 @@ class CustomerWindow:
             selected_acc = accounts_m[c]
             if(c != -1 and (float(selected_acc.balance) - float(total)) >= 0 and receiver_acc != 1):
                 selected_acc.money_transfer(receiver_acc, total)
+                self.ui.listAccounts_radio.setChecked(True)
+                self.showListAccounts()
             else:
                 msg.setWindowTitle("Error")
                 msg.setText("Selection or overlimit ERROR \nor acc error")
@@ -314,8 +333,6 @@ class CustomerWindow:
             msg.setWindowTitle("Error")
             msg.setText("Invalid input")
             x = msg.exec_()
-        self.ui.listAccounts_radio.setChecked(True)
-        self.showListAccounts()
 
     def delete(self):
         cur_cus = Customer(self.cus_id)
@@ -385,7 +402,6 @@ class ManagerWindow:
         self.display_summery()
         self.init_LoadRequests()
 
-        self.ui.list_button.clicked.connect(self.displayTransactions)
         self.ui.pushButton.clicked.connect(self.add_customer)
         self.ui.loan_requests.clicked.connect(self.showLoanRequests)
         self.ui.add_currency_btn.clicked.connect(self.add_currency)
@@ -461,23 +477,23 @@ class ManagerWindow:
 
     def diplayFinances(self):
         incomeQuery = '''
-                SELECT lp.total + dep.total bank_income
-                FROM (SELECT SUM(total) total
-                FROM transactions2 tr
-                WHERE trans_type = 'loan payment') as lp,
-                (SELECT SUM(t2.total*exch_rate) total
-                FROM transactions2 t2, account2 a, currency cur
-                WHERE (t2.trans_type = 'deposit' and
+                    SELECT ISNULL(lp.total,0) + ISNULL(dep.total,0) income
+                    FROM (SELECT SUM(total) total
+                    FROM transactions2 tr
+                    WHERE trans_type = 'loan payment') as lp,
+                    (SELECT SUM(t2.total*exch_rate) total
+                    FROM transactions2 t2, account2 a, currency cur
+                    WHERE (t2.trans_type = 'deposit' and
                     t2.rsv_id = a.acc_id and
                     cur.curr_code = a.currency)) as dep'''
 
-        expensesQuery = '''SELECT lt.total + wd.total bank_expense
-                    FROM (SELECT SUM(total) total
-                    FROM transactions2 tr
-                    WHERE trans_type = 'loan takeout') as lt,
-                    (SELECT SUM(t2.total*exch_rate) total
-                    FROM transactions2 t2, account2 a, currency cur
-                    WHERE (t2.trans_type = 'withdraw' and
+        expensesQuery = '''SELECT ISNULL(lt.total,0) + ISNULL(wd.total,0) expense
+                        FROM (SELECT SUM(total) total
+                        FROM transactions2 tr
+                        WHERE trans_type = 'loan takeout') as lt,
+                        (SELECT SUM(t2.total*exch_rate) total
+                        FROM transactions2 t2, account2 a, currency cur
+                        WHERE (t2.trans_type = 'withdraw' and
                         t2.src_id = a.acc_id and
                         cur.curr_code = a.currency)) as wd'''
 
@@ -620,31 +636,6 @@ class ManagerWindow:
             msg.setText("Please select row")
             x = msg.exec_()
 
-    def displayTransactions(self):
-        self.ui.transactions_tableWidget.setRowCount(0)
-        transNo = self.ui.transactionsNumber_lineEdit.text()
-        self.ui.transactions_tableWidget.setRowCount(int(transNo))
-        print(transNo)
-
-        query = f'''SELECT TOP {transNo} * FROM transactions2
-                ORDER BY trans_date DESC'''
-        cursor.execute(query)
-        row = 0
-        for tpl in cursor:
-            for col in range(0,8):
-                self.ui.transactions_tableWidget.setItem(row, col, QtWidgets.QTableWidgetItem(str(tpl[col])))
-            row += 1
-        
-        deadlocks = findDeadlocks(transNo)
-        string = ', '.join(str(item) for item in deadlocks)
-        print(deadlocks)
-        print(string)
-        self.ui.deadLockNumber_label.setText(str(len(deadlocks)))
-        self.ui.deadLocks_lable.setText(string)
-        #for deadlock in deadlocks:
-
-        
-
 
 class MainWindow:
     def __init__(self):
@@ -675,7 +666,7 @@ class MainWindow:
         print(check)
         if(type(check) == int):
             # main_win.hide()
-            clerk_window.setClerkID(check)
+            clerk_window.clerk_id = check
             clerk_window.init_window()
             clerk_window.show()
 
