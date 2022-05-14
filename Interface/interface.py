@@ -1,5 +1,5 @@
-from functools import total_ordering
 from locale import currency
+from functools import total_ordering
 import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
@@ -21,7 +21,10 @@ def check_user_input(input, type):
         u_id = int(input)
         if(type == "customer"):
             cursor.execute(
-                'SELECT * FROM customer2 WHERE customer2.id = ?', u_id)
+                '''SELECT customer2.* FROM customer2, customerStatus2 
+                WHERE customerStatus2.cus_id = customer2.id and
+                customer2.id = ? and
+                customerStatus2.cus_status = 'ACTIVE' ''', u_id)
             row = cursor.fetchone()
             if(not row):
                 msg.setWindowTitle("Error")
@@ -68,9 +71,10 @@ class CustomerWindow:
         self.ui.deposit_radio.clicked.connect(self.showDeposit)
         self.ui.newAccount_radio.clicked.connect(self.showCreateAccount)
         self.ui.deleteAccount_radio.clicked.connect(self.showDeleteAccount)
-        self.ui.editInfo_radio.clicked.connect(self.showEditInfo)
         self.ui.loan_info_radio.clicked.connect(self.showLoanInfo)
         self.ui.req_loan_radio.clicked.connect(self.showReqLoan)
+        self.ui.editInfo_radio.clicked.connect(self.showEditInfo)
+        self.ui.monthlySummary_radio.clicked.connect(self.showMonthlySummery)
         self.ui.monthlySummary_radio.clicked.connect(self.showMonthlySummery)
 
         self.ui.deposit_btn.clicked.connect(self.deposit)
@@ -91,6 +95,12 @@ class CustomerWindow:
         self.display_moneyTransfer()
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PMoneyTransfer)
+
+    def showLoanInfo(self):
+        self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PLoanInfo)
+
+    def showReqLoan(self):
+        self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PRequestLoan)
 
     def showDeposit(self):
         # print("customer3333: " + str(self.cus_id))
@@ -127,25 +137,10 @@ class CustomerWindow:
         # print("customer8888: " + str(self.cus_id))
         self.ui.operations_stackedWidget.setCurrentWidget(self.ui.Pedit_info)
 
-    def showLoanInfo(self):
-        self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PLoanInfo)
-
-    def showReqLoan(self):
-        self.ui.operations_stackedWidget.setCurrentWidget(self.ui.PRequestLoan)
-
     def showMonthlySummery(self):
         self.display_monthlySummery()
         self.ui.operations_stackedWidget.setCurrentWidget(
             self.ui.PMonthlySummary)
-
-    def requestLoan(self):
-        #req_loan_btn m_edit l_edit
-        amount = self.ui.l_edit.text()
-        months = self.ui.m_edit.text()
-        print(months, amount, self.cus_id)
-        query = f'''INSERT INTO loanRequests(cus_id, ay, anapara) VALUES({self.cus_id},{months},{amount})'''
-        cursor.execute(query)
-        cursor.commit()
 
     def display_customer_info(self):
         currentCustomer = Customer(self.cus_id)
@@ -241,11 +236,20 @@ class CustomerWindow:
         self.ui.tableWidget.setRowCount(len(transactions))
         counter = 0
         for transaction in transactions:
-            t = transaction.toArray()
-            for i in range(0, 6):
+            t = transaction.to_array_customer()
+            for i in range(0, 5):
                 self.ui.tableWidget.setItem(
                     counter, i, QtWidgets.QTableWidgetItem(str(t[i])))
             counter += 1
+
+    def requestLoan(self):
+        # req_loan_btn m_edit l_edit
+        amount = self.ui.l_edit.text()
+        months = self.ui.m_edit.text()
+        print(months, amount, self.cus_id)
+        query = f'''INSERT INTO loanRequests(cus_id, ay, anapara) VALUES({self.cus_id},{months},{amount})'''
+        cursor.execute(query)
+        cursor.commit()
 
     def withdraw(self):
         cur_cus = Customer(self.cus_id)
@@ -254,8 +258,8 @@ class CustomerWindow:
         selected_acc = accounts[c]
 
         try:
-            amount = int(self.ui.withdraw_textEdit.toPlainText())
-            if(c != -1 and (int(selected_acc.balance) - int(amount)) >= 0):
+            amount = float(self.ui.withdraw_textEdit.toPlainText())
+            if(c != -1 and (float(selected_acc.balance) - float(amount)) >= 0):
                 selected_acc.withdraw(amount)
             else:
                 msg.setWindowTitle("Error")
@@ -274,9 +278,9 @@ class CustomerWindow:
         accounts_d = cur_cus_d.list_accounts()
         c = self.ui.deposit_tableWidget.currentRow()
         try:
-            amount = int(self.ui.deposit_textEdit.toPlainText())
+            amount = float(self.ui.deposit_textEdit.toPlainText())
             selected_acc = accounts_d[c]
-            if(c != -1 and type(amount) == int):
+            if(c != -1):
                 selected_acc.deposit(amount)
             else:
                 msg.setWindowTitle("Error")
@@ -296,14 +300,14 @@ class CustomerWindow:
         c = self.ui.MT_listAccounts_tableWidget.currentRow()
         try:
             receiver_id = int(self.ui.to_account_no.toPlainText())
-            total = int(self.ui.MT_total_textEdit.toPlainText())
+            total = float(self.ui.MT_total_textEdit.toPlainText())
             receiver_acc = searchAccountIDs(receiver_id)
             selected_acc = accounts_m[c]
-            if(c != -1 and (int(selected_acc.balance) - int(total)) >= 0 and receiver_acc != 1):
+            if(c != -1 and (float(selected_acc.balance) - float(total)) >= 0 and receiver_acc != 1):
                 selected_acc.money_transfer(receiver_acc, total)
             else:
                 msg.setWindowTitle("Error")
-                msg.setText("Selection or overlimit ERROR or acc error")
+                msg.setText("Selection or overlimit ERROR \nor acc error")
                 x = msg.exec_()
         except ValueError:
             msg.setWindowTitle("Error")
@@ -372,22 +376,20 @@ class ManagerWindow:
         self.ui.update_interest.clicked.connect(self.showUpdate_interest)
         self.ui.add_customer.clicked.connect(self.showAdd_customer)
         self.ui.view_transactions.clicked.connect(self.showView_transactions)
-        self.ui.loan_requests.clicked.connect(self.showLoanRequests)
         self.ui.main.clicked.connect(self.showMain)
-        self.ui.accept_loan_btn.clicked.connect(self.acceptRequest)
-        self.ui.reject_loan_btn.clicked.connect(self.rejectRequest)
 
-        
         self.display_update_currency()
         self.display_update_interest()
         self.display_update_salary()
         self.display_summery()
         self.init_LoadRequests()
-        #loan_requests_widget
 
         self.ui.pushButton.clicked.connect(self.add_customer)
+        self.ui.loan_requests.clicked.connect(self.showLoanRequests)
         self.ui.add_currency_btn.clicked.connect(self.add_currency)
         self.ui.update_currency_btn.clicked.connect(self.update_currency)
+        self.ui.accept_loan_btn.clicked.connect(self.acceptRequest)
+        self.ui.reject_loan_btn.clicked.connect(self.rejectRequest)
 
     def show(self):
         self.diplayFinances()
@@ -419,11 +421,41 @@ class ManagerWindow:
     def showLoanRequests(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.loan_requests_widget)
 
+    def init_LoadRequests(self):
+        self.ui.loan_req_tableWidget.setRowCount(50)
+        # loan_req_tableWidget
+        # reject_loan_btn
+        # faiz_edit
+        # accept_loan_btn
+        query = '''SELECT req_no, cus_id, ay, anapara
+                    FROM loanRequests
+                    WHERE faiz IS NULL;'''
+        cursor.execute(query)
+        #rows = cursor.fetchall()
+        row = 0
+        for item in cursor:
+            for col in range(0, 4):
+                self.ui.loan_req_tableWidget.setItem(
+                    row, col, QtWidgets.QTableWidgetItem(str(item[col])))
+            row += 1
+
     def display_summery(self):
         self.ui.income_value.setText("404")
         self.ui.expenses_value.setText("404")
         self.ui.profit_value.setText("404")
         self.ui.balance_value.setText("404")
+
+    def display_update_currency(self):
+        self.ui.currency_comboBox.clear()
+        currencies = getCurrencies()
+        self.ui.currency_comboBox.addItems(currencies)
+
+    def display_update_interest(self):
+        self.ui.previous_interest_value.setText("404")
+
+    def display_update_salary(self):
+        salary = classes.get_salary()
+        self.ui.previous_salary_value.setText(str(salary))
 
     def diplayFinances(self):
         incomeQuery = '''
@@ -461,35 +493,6 @@ class ManagerWindow:
         self.ui.income_value.setText(str(income))
         self.ui.expenses_value.setText(str(expense))
         self.ui.balance_value.setText(str(totalBalance))
-
-    def init_LoadRequests(self):
-        self.ui.loan_req_tableWidget.setRowCount(50)
-        #loan_req_tableWidget
-        #reject_loan_btn
-        #faiz_edit
-        #accept_loan_btn
-        query = '''SELECT req_no, cus_id, ay, anapara
-                    FROM loanRequests
-                    WHERE faiz IS NULL;'''
-        cursor.execute(query)
-        #rows = cursor.fetchall()
-        row = 0
-        for item in cursor:
-            for col in range(0,4):
-                self.ui.loan_req_tableWidget.setItem(row, col, QtWidgets.QTableWidgetItem(str(item[col])))
-            row += 1
-
-    def display_update_currency(self):
-        self.ui.currency_comboBox.clear()
-        currencies = getCurrencies()
-        self.ui.currency_comboBox.addItems(currencies)
-
-    def display_update_interest(self):
-        self.ui.previous_interest_value.setText("404")
-
-    def display_update_salary(self):
-        salary = classes.get_salary()
-        self.ui.previous_salary_value.setText(str(salary))
 
     def add_customer(self):
         try:
@@ -560,51 +563,54 @@ class ManagerWindow:
         try:
             today = str(date.today())
             faiz = self.ui.faiz_edit.text()
-            
+
             if not faiz:
                 raise ValueError()
             isSelected = self.ui.loan_req_tableWidget.currentRow()
-            
-            
+
             if isSelected == -1:
                 msg.setWindowTitle("Error")
                 msg.setText("Please select row")
                 x = msg.exec_()
-            else:    
-                req_no = self.ui.loan_req_tableWidget.item(isSelected,0).text()
-                print(faiz, type(faiz), today, type(today), req_no, type(req_no))
+            else:
+                req_no = self.ui.loan_req_tableWidget.item(
+                    isSelected, 0).text()
+                print(faiz, type(faiz), today, type(
+                    today), req_no, type(req_no))
                 query = f'''UPDATE loanRequests 
                             SET acpt_date = '{today}', faiz = {faiz}
                             WHERE req_no = {req_no}'''
                 cursor.execute(query)
                 cursor.commit()
-                self.ui.loan_req_tableWidget.removeRow(self.ui.loan_req_tableWidget.currentRow())
+                self.ui.loan_req_tableWidget.removeRow(
+                    self.ui.loan_req_tableWidget.currentRow())
                 self.ui.loan_req_tableWidget.setRowCount(50)
 
         except ValueError:
             msg.setWindowTitle("Error")
             msg.setText("Invalid input")
             x = msg.exec_()
-    
+
     def rejectRequest(self):
         try:
             date = 'NULL'
             faiz = '-1'
             selected = self.ui.loan_req_tableWidget.currentRow()
-            
+
             if selected == -1:
                 msg.setWindowTitle("Error")
                 msg.setText("Please select row")
                 x = msg.exec_()
             else:
-                req_no = self.ui.loan_req_tableWidget.item(selected,0).text()
+                req_no = self.ui.loan_req_tableWidget.item(selected, 0).text()
                 query = f'''UPDATE loanRequests 
                             SET acpt_date = {date}, faiz = {faiz}
                             WHERE req_no = {req_no}'''
                 cursor.execute(query)
                 cursor.commit()
 
-                self.ui.loan_req_tableWidget.removeRow(self.ui.loan_req_tableWidget.currentRow())
+                self.ui.loan_req_tableWidget.removeRow(
+                    self.ui.loan_req_tableWidget.currentRow())
 
                 self.ui.loan_req_tableWidget.setRowCount(50)
         except ValueError:
@@ -641,11 +647,9 @@ class MainWindow:
         check = check_user_input(ck_id, "clerk")
         print(check)
         if(type(check) == int):
-            main_win.hide()
-            #clerk_Window.clerk_id = check
+            # main_win.hide()
             clerk_window.setClerkID(check)
             clerk_window.init_window()
-            #print(clerk_window.clerk_id)
             clerk_window.show()
 
     def manager_clicked(self):
