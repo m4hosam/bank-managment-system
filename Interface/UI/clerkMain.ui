@@ -230,7 +230,7 @@ Requests</string>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="PManage_customers">
      <widget class="QTableWidget" name="MC_table">
@@ -1452,16 +1452,6 @@ p, li { white-space: pre-wrap; }
       </column>
       <column>
        <property name="text">
-        <string>source customer ID</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>recepient customer ID</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
         <string>source account</string>
        </property>
       </column>
@@ -1488,6 +1478,16 @@ p, li { white-space: pre-wrap; }
       <column>
        <property name="text">
         <string>recepient balance</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>source customer ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>recepient customer ID</string>
        </property>
       </column>
      </widget>

@@ -1099,7 +1099,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>9</number>
      </property>
      <widget class="QWidget" name="PListAccounts">
       <widget class="QTableWidget" name="listAccounts_tableWidget_2">
@@ -2883,14 +2883,14 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="page">
+     <widget class="QWidget" name="PLoanInfo">
       <widget class="QLabel" name="loan_label">
        <property name="geometry">
         <rect>
-         <x>140</x>
-         <y>50</y>
+         <x>30</x>
+         <y>60</y>
          <width>81</width>
-         <height>51</height>
+         <height>41</height>
         </rect>
        </property>
        <property name="font">
@@ -2905,8 +2905,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="loan_value_label">
        <property name="geometry">
         <rect>
-         <x>320</x>
-         <y>50</y>
+         <x>130</x>
+         <y>60</y>
          <width>241</width>
          <height>41</height>
         </rect>
@@ -2982,6 +2982,35 @@ p, li { white-space: pre-wrap; }
          <string>Paid</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>Left</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QLabel" name="loan_status">
+       <property name="geometry">
+        <rect>
+         <x>470</x>
+         <y>50</y>
+         <width>121</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:blue</string>
+       </property>
+       <property name="text">
+        <string>ACCEPTED</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
       </widget>
      </widget>
     </widget>
@@ -3360,6 +3389,9 @@ p, li { white-space: pre-wrap; }
        <property name="checked">
         <bool>false</bool>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
       </widget>
      </item>
      <item>
@@ -3447,6 +3479,9 @@ p, li { white-space: pre-wrap; }
        <property name="checked">
         <bool>false</bool>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
       </widget>
      </item>
      <item>
