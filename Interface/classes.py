@@ -1,6 +1,149 @@
+from dateutil.relativedelta import relativedelta
 from numpy import arctanh
 from SQLconnection import cursor, connection
-import datetime
+from datetime import datetime
+
+
+def get_loan_info(cus_id):
+    loans = []
+    cursor.execute(
+        '''SELECT cus_id, ay, anapara, faiz, acpt_date
+        FROM loanRequests
+        WHERE cus_id = ? and
+	    (acpt_date IS NOT NULL);''', cus_id)
+    loan_row = cursor.fetchone()
+
+    cursor.execute(
+        '''SELECT gecikme_faiz
+        FROM others;''')
+    gecikme_faiz = cursor.fetchone().gecikme_faiz
+
+    paid_query = '''
+        SELECT SUM(total) as total
+        FROM transactions2 tr, userAccounts2 ua, loanRequests lr
+        WHERE tr.src_id = ua.acc_id and
+        ua.cus_id = lr.cus_id and
+        trans_type = 'loan payment' and
+        ua.cus_id = ? and
+        trans_date between DATEADD(MONTH, 0+(?), lr.acpt_date) and DATEADD(MONTH, 1+(?), lr.acpt_date)
+    '''
+
+    # after_month = current_date + relativedelta(months=1)
+    # print('Today: ', dt_obj.strftime('%Y-%m-%d'))
+    # print('After Month:', date_after_month.strftime('%Y-%m-%d'))
+
+    if loan_row:
+        accepted_date = datetime.strptime(loan_row.acpt_date, "%Y-%m-%d")
+        left = float(loan_row.anapara)
+        anapara = float(left) / (int(loan_row.ay))
+        faiz = (anapara*int(loan_row.faiz)) / 100
+        payment = anapara + faiz
+        paid = payment
+        for i in range(0, int(loan_row.ay)):
+            arr = []
+            after_month = accepted_date + relativedelta(months=i)
+            # date column
+            # anapara column
+            anapara = float(left) / (int(loan_row.ay) - i)
+
+            # faiz column
+            faiz = (anapara*int(loan_row.faiz)) / 100
+
+            # gecekme column
+            k = (payment - paid)
+            if(k < 0):
+                gecikme = 0
+            else:
+                gecikme = k*(gecikme_faiz / 100)
+
+            # payment
+            payment = anapara + faiz + gecikme
+
+            # paid
+            cursor.execute(paid_query, cus_id, i, i)
+            row = cursor.fetchone()
+            if row.total:
+                paid = row.total
+            else:
+                paid = 0
+
+            # left
+            left = left - paid + faiz + gecikme
+            if(left < 0):
+                left = 0
+            if (faiz < 0):
+                faiz = 0
+            if (gecikme < 0):
+                gecikme = 0
+
+            arr.append(after_month.strftime('%Y-%m-%d'))
+            arr.append(round(anapara, 2))
+            arr.append(round(faiz, 2))
+            arr.append(round(gecikme, 2))
+            arr.append(round(payment, 2))
+            arr.append(round(paid, 2))
+            arr.append(round(left, 2))
+
+            loans.append(arr)
+    else:
+        return None
+    return loans
+
+
+def get_time():
+    cursor.execute(
+        '''SELECT tarih
+            FROM others;''')
+    k = cursor.fetchone().tarih
+    time = datetime.strptime(k, '%Y-%m-%d')
+    today = datetime.now()
+    new_date = today.replace(year=time.year, month=time.month, day=time.day)
+    return new_date
+
+
+def months_difference(d1, d2):
+    dt1 = datetime.strptime(d1, '%Y-%m-%d')
+    dt2 = datetime.strptime(d2, '%Y-%m-%d')
+    k = (dt2 - dt1)
+    months = k.days // 30
+    return int(months)
+
+
+def current_loan_month(arr):
+    today = get_time().strftime('%Y-%m-%d')
+    first_month = arr[0][0]
+    months = len(arr)
+    row = months_difference(first_month, today)
+    if(row > months or row < 0):
+        return months-1
+    else:
+        return row
+
+
+def get_profit():
+    profit = 0
+    t = get_time()
+    today = t.strftime('%Y-%m-%d')
+    cursor.execute(
+        '''SELECT cus_id, ay, anapara, faiz, acpt_date
+        FROM loanRequests
+        WHERE acpt_date IS NOT NULL''')
+    rows = cursor.fetchall()
+    if(rows):
+        for row in rows:
+            arr = get_loan_info(row.cus_id)
+            months = months_difference(arr[0][0], today)
+            print(len(arr))
+            for i in range(0, len(arr)):
+                interest = (arr[i][2] + arr[i][3])
+                paid = arr[i][5]
+                if(paid > interest):
+                    profit = profit + interest
+                else:
+                    profit = profit + paid
+            # print(profit)
+
+    return profit
 
 
 def getCurrencies():
@@ -15,11 +158,11 @@ def getCurrencies():
 
 def getCurrencyRate(currency):
     cursor.execute(
-        '''SELECT exch_rate FROM currency 
+        '''SELECT exch_rate FROM currency
         WHERE currency.curr_code = ?''', currency)
     row = cursor.fetchone()
     if(row):
-        return float(row.exch_rate)
+        return round(float(row.exch_rate), 2)
     else:
         print("ERROR in get Currency Rate")
         return -1
@@ -27,7 +170,7 @@ def getCurrencyRate(currency):
 
 def searchAccountIDs(r_id):
     cursor.execute(
-        '''SELECT a.acc_id, a.currency, a.balance 
+        '''SELECT a.acc_id, a.currency, a.balance
         FROM account2 As a, accountStatus2 AS s
         WHERE s.acc_id = a.acc_id AND
         s.acc_status = 'ACTIVE' ''')
@@ -40,7 +183,7 @@ def searchAccountIDs(r_id):
 
 def req_open(currency, cus_id):
     cursor.execute(
-        '''INSERT INTO account2 
+        '''INSERT INTO account2
         VALUES( ?, 0)
         ''', currency)
     cursor.execute(
@@ -72,9 +215,23 @@ def set_salary(new_salary):
     connection.commit()
 
 
+def get_interest():
+    cursor.execute("SELECT gecikme_faiz FROM others;")
+    g_faiz = cursor.fetchone().gecikme_faiz
+    return g_faiz
+
+
+def update_interest(new_interest):
+    if(new_interest > 0):
+        cursor.execute(
+            '''UPDATE others
+            SET gecikme_faiz = ?''', new_interest)
+        connection.commit()
+
+
 def add_customer(fn, ln, e, p, tc, ad):
     cursor.execute(
-        '''INSERT INTO customer2 
+        '''INSERT INTO customer2
         VALUES(?, ?, ?, ?, ?, ?)''', fn, ln, e, p, tc, ad)
 
     connection.commit()
@@ -92,10 +249,14 @@ def add_customer(fn, ln, e, p, tc, ad):
         GROUP BY clerk_id
         ORDER BY r_cus''')
     first_row = cursor.fetchone()
-    # print(first_row.clerk_id)
-    cursor.execute(
-        '''INSERT INTO customerClerks2
-        VALUES(?, ?)''', cus_row.LastID, first_row.clerk_id)
+    if not first_row:
+        cursor.execute(
+            '''INSERT INTO customerClerks2
+            VALUES(?, ?)''', cus_row.LastID, 1)
+    else:
+        cursor.execute(
+            '''INSERT INTO customerClerks2
+            VALUES(?, ?)''', cus_row.LastID, first_row.clerk_id)
     connection.commit()
 
 
@@ -119,14 +280,14 @@ def delete_customer(cus_id):
 
 def add_currency(cur, rate):
     cursor.execute(
-        '''INSERT INTO currency 
+        '''INSERT INTO currency
         VALUES(?, ?)''', cur, rate)
     connection.commit()
 
 
-def add_currency(cur, rate):
+def update_currency(cur, rate):
     cursor.execute(
-        '''UPDATE currency 
+        '''UPDATE currency
         SET exch_rate = ?
         WHERE curr_code = ?''', rate, cur)
     connection.commit()
@@ -140,7 +301,7 @@ class Account:
 
     def save(self):
         cursor.execute(
-            '''UPDATE accountStatus2 
+            '''UPDATE accountStatus2
             SET accountStatus2.acc_status = 'ACTIVE'
             WHERE accountStatus2.acc_id = ?
             ''', self.account_id)
@@ -148,7 +309,7 @@ class Account:
 
     def delete(self):
         cursor.execute(
-            '''UPDATE accountStatus2 
+            '''UPDATE accountStatus2
             SET accountStatus2.acc_status = 'DELETED'
             WHERE accountStatus2.acc_id = ?
             ''', self.account_id)
@@ -156,7 +317,7 @@ class Account:
 
     def req_delete(self):
         cursor.execute(
-            '''UPDATE accountStatus2 
+            '''UPDATE accountStatus2
             SET accountStatus2.acc_status = 'R-DELETED'
             WHERE accountStatus2.acc_id = ?
             ''', self.account_id)
@@ -170,43 +331,50 @@ class Account:
 
     def withdraw(self, value):
         self.balance = float(self.balance) - float(value)
+        self.balance = round(self.balance, 2)
         if(self.balance >= 0):
             cursor.execute(
                 '''UPDATE account2
                 SET account2.balance = ?
                 WHERE account2.acc_id = ?''', self.balance, self.account_id)
-            t = datetime.datetime.now()
+            t = get_time()
             cursor.execute(
-                '''INSERT INTO transactions2 
+                '''INSERT INTO transactions2
                 VALUES( ? ,?,NULL,'withdraw',?, ?, NULL)
                 ''', t, self.account_id, value, self.balance)
             connection.commit()
 
     def deposit(self, value):
         self.balance = float(self.balance) + float(value)
+        self.balance = round(self.balance, 2)
         cursor.execute(
             '''UPDATE account2
             SET account2.balance = ?
             WHERE account2.acc_id = ?''', self.balance, self.account_id)
-        t = datetime.datetime.now()
+        t = get_time()
         cursor.execute(
-            '''INSERT INTO transactions2 
+            '''INSERT INTO transactions2
             VALUES( ? ,NULL,?,'deposit',?, NULL, ?)
             ''', t, self.account_id, value, self.balance)
         connection.commit()
 
     def money_transfer(self, receiver, amount):
         # Exchange rate logic should be here
-        t = datetime.datetime.now()
+        t = get_time()
         c1 = self.currency
         c2 = receiver.currency
         new_balance1 = float(self.balance) - float(amount)
+        new_balance1 = round(new_balance1, 2)
         if (c1 == c2):
             new_balance2 = float(receiver.balance) + float(amount)
+            new_balance2 = round(new_balance2, 2)
         else:
             amount_in_TL = float(amount) * getCurrencyRate(c1)
             amount_in_c = amount_in_TL / getCurrencyRate(c2)
             new_balance2 = float(receiver.balance) + amount_in_c
+            amount_in_TL = round(amount_in_TL, 2)
+            amount_in_c = round(amount_in_c, 2)
+            new_balance2 = round(new_balance2, 2)
 
         if(new_balance1 >= 0):
             # Source balance Change
@@ -220,12 +388,27 @@ class Account:
                  SET account2.balance = ?
                  WHERE account2.acc_id = ?''', new_balance2, receiver.account_id)
             cursor.execute(
-                '''INSERT INTO transactions2 
+                '''INSERT INTO transactions2
                 VALUES( ? ,?,?,'money transfer',?, ?, ?)
                 ''', t, self.account_id, receiver.account_id, amount, new_balance1, new_balance2)
             connection.commit()
         else:
             print("Transfer Denied Classes Related")
+
+    def pay_loan(self, value):
+        self.balance = float(self.balance) - float(value)
+        self.balance = round(self.balance, 2)
+        if(self.balance >= 0):
+            cursor.execute(
+                '''UPDATE account2
+                SET account2.balance = ?
+                WHERE account2.acc_id = ?''', self.balance, self.account_id)
+            t = get_time()
+            cursor.execute(
+                '''INSERT INTO transactions2
+                VALUES( ? ,?,NULL,'loan payment',?, ?, NULL)
+                ''', t, self.account_id, value, self.balance)
+            connection.commit()
 
     def __str__(self):
         return f"----\n({self.account_id}  |  {self.currency}  | {self.balance})\n----"
@@ -237,7 +420,7 @@ class Customer:
         self.transactions = []
         self.customer_id = customer_id
         cursor.execute(
-            '''SELECT customer2.* FROM customer2, customerStatus2 
+            '''SELECT customer2.* FROM customer2, customerStatus2
             WHERE customerStatus2.cus_id = customer2.id and
             customer2.id = ? and
             customerStatus2.cus_status = 'ACTIVE' ''', customer_id)
@@ -254,7 +437,7 @@ class Customer:
 
     def list_accounts(self):
         cursor.execute(
-            '''SELECT a.acc_id, a.currency, a.balance 
+            '''SELECT a.acc_id, a.currency, a.balance
             FROM account2 As a, userAccounts2 As u, accountStatus2 As s
             WHERE u.acc_id = a.acc_id AND u.cus_id = ? AND
             s.acc_id = a.acc_id AND
@@ -361,6 +544,11 @@ class Transaction:
                 self.arr.insert(4, f"-{str(self.total)}")
             elif(int(self.rsv_cus) == int(self.cus_id)):
                 self.arr.insert(4, f"+{str(self.total)}")
+        elif(self.trans_type == 'loan payment'):
+            rsv = "Bank"
+            self.arr.insert(1, self.src_id)
+            self.arr.insert(2, rsv)
+            self.arr.insert(4, f"-{str(self.total)}")
 
         # last one is the bank loan
         # print("before11", self.arr)
@@ -370,6 +558,7 @@ class Transaction:
         ar = self.to_array_customer()
 
         k = "customer"
+        bank = "Bank"
         if(self.trans_type == "deposit"):
             ar.append(k)
             ar.append(self.rsv_balance)
@@ -385,6 +574,11 @@ class Transaction:
             ar.append(self.rsv_balance)
             ar.append(self.src_cus)
             ar.append(self.rsv_cus)
+        elif(self.trans_type == "loan payment"):
+            ar.append(self.src_balance)
+            ar.append(bank)
+            ar.append(self.src_cus)
+            ar.append(bank)
         return ar
 
     def __str__(self):
@@ -402,7 +596,7 @@ class Clerk:
             FROM customer2 c, customerStatus2 cs , customerClerks2 cc
             WHERE cs.cus_id = cc.cus_id and
             cc.clerk_id = ? and
-            c.id = cs.cus_id and 
+            c.id = cs.cus_id and
             cus_status = 'ACTIVE' ''', self.clerk_id)
         rows = cursor.fetchall()
         if(not rows):
@@ -425,9 +619,3 @@ class Clerk:
         for c in self.customers:
             ar.append(Customer(c))
         return ar
-
-
-# c = Clerk(2)
-# print(c.customers)
-# print(c.list_customer()[0].first_name)
-# print(c.list_transactions(301))

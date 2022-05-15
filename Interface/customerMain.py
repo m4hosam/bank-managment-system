@@ -670,7 +670,7 @@ class Ui_CustomerWindow(object):
         self.tableWidget.setWordWrap(True)
         self.tableWidget.setRowCount(10)
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(6)
+        self.tableWidget.setColumnCount(5)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setVerticalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
@@ -684,8 +684,6 @@ class Ui_CustomerWindow(object):
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(4, item)
         item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(5, item)
-        item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setItem(0, 0, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setItem(0, 1, item)
@@ -695,9 +693,7 @@ class Ui_CustomerWindow(object):
         self.tableWidget.setItem(0, 3, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setItem(0, 4, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget.setItem(0, 5, item)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(90)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(106)
         self.tableWidget.horizontalHeader().setMinimumSectionSize(47)
         self.tableWidget.verticalHeader().setDefaultSectionSize(40)
         self.tableWidget.verticalHeader().setMinimumSectionSize(30)
@@ -739,6 +735,7 @@ class Ui_CustomerWindow(object):
         font.setPointSize(9)
         self.email_textEdit.setFont(font)
         self.email_textEdit.setDocumentTitle("")
+        self.email_textEdit.setMarkdown("")
         self.email_textEdit.setPlaceholderText("")
         self.email_textEdit.setObjectName("email_textEdit")
         self.TC_textEdit = QtWidgets.QTextEdit(self.Pedit_info)
@@ -776,6 +773,7 @@ class Ui_CustomerWindow(object):
         font.setPointSize(9)
         self.TC_textEdit.setFont(font)
         self.TC_textEdit.setDocumentTitle("")
+        self.TC_textEdit.setMarkdown("")
         self.TC_textEdit.setPlaceholderText("")
         self.TC_textEdit.setObjectName("TC_textEdit")
         self.FN_textEdit = QtWidgets.QTextEdit(self.Pedit_info)
@@ -813,6 +811,7 @@ class Ui_CustomerWindow(object):
         font.setPointSize(9)
         self.FN_textEdit.setFont(font)
         self.FN_textEdit.setDocumentTitle("")
+        self.FN_textEdit.setMarkdown("")
         self.FN_textEdit.setPlaceholderText("")
         self.FN_textEdit.setObjectName("FN_textEdit")
         self.LN_textEdit = QtWidgets.QTextEdit(self.Pedit_info)
@@ -850,6 +849,7 @@ class Ui_CustomerWindow(object):
         font.setPointSize(9)
         self.LN_textEdit.setFont(font)
         self.LN_textEdit.setDocumentTitle("")
+        self.LN_textEdit.setMarkdown("")
         self.LN_textEdit.setPlaceholderText("")
         self.LN_textEdit.setObjectName("LN_textEdit")
         self.phoneNum_textEdit = QtWidgets.QTextEdit(self.Pedit_info)
@@ -887,6 +887,7 @@ class Ui_CustomerWindow(object):
         font.setPointSize(9)
         self.phoneNum_textEdit.setFont(font)
         self.phoneNum_textEdit.setDocumentTitle("")
+        self.phoneNum_textEdit.setMarkdown("")
         self.phoneNum_textEdit.setPlaceholderText("")
         self.phoneNum_textEdit.setObjectName("phoneNum_textEdit")
         self.Address_textEdit = QtWidgets.QTextEdit(self.Pedit_info)
@@ -924,6 +925,7 @@ class Ui_CustomerWindow(object):
         font.setPointSize(9)
         self.Address_textEdit.setFont(font)
         self.Address_textEdit.setDocumentTitle("")
+        self.Address_textEdit.setMarkdown("")
         self.Address_textEdit.setPlaceholderText("")
         self.Address_textEdit.setObjectName("Address_textEdit")
         self.edit_save_button = QtWidgets.QPushButton(self.Pedit_info)
@@ -972,23 +974,24 @@ class Ui_CustomerWindow(object):
         self.PLoanInfo = QtWidgets.QWidget()
         self.PLoanInfo.setObjectName("PLoanInfo")
         self.loan_label = QtWidgets.QLabel(self.PLoanInfo)
-        self.loan_label.setGeometry(QtCore.QRect(140, 50, 81, 51))
+        self.loan_label.setGeometry(QtCore.QRect(170, 60, 81, 41))
         font = QtGui.QFont()
         font.setPointSize(15)
         self.loan_label.setFont(font)
         self.loan_label.setObjectName("loan_label")
         self.loan_value_label = QtWidgets.QLabel(self.PLoanInfo)
-        self.loan_value_label.setGeometry(QtCore.QRect(320, 50, 241, 41))
+        self.loan_value_label.setGeometry(QtCore.QRect(320, 60, 241, 41))
         font = QtGui.QFont()
         font.setPointSize(15)
         self.loan_value_label.setFont(font)
         self.loan_value_label.setStyleSheet("color: Red")
+        self.loan_value_label.setText("")
         self.loan_value_label.setObjectName("loan_value_label")
         self.loan_info_tableWidget = QtWidgets.QTableWidget(self.PLoanInfo)
         self.loan_info_tableWidget.setGeometry(QtCore.QRect(30, 120, 571, 291))
         self.loan_info_tableWidget.setRowCount(7)
         self.loan_info_tableWidget.setObjectName("loan_info_tableWidget")
-        self.loan_info_tableWidget.setColumnCount(6)
+        self.loan_info_tableWidget.setColumnCount(7)
         item = QtWidgets.QTableWidgetItem()
         self.loan_info_tableWidget.setVerticalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
@@ -1003,8 +1006,34 @@ class Ui_CustomerWindow(object):
         self.loan_info_tableWidget.setHorizontalHeaderItem(4, item)
         item = QtWidgets.QTableWidgetItem()
         self.loan_info_tableWidget.setHorizontalHeaderItem(5, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.loan_info_tableWidget.setHorizontalHeaderItem(6, item)
         self.loan_info_tableWidget.horizontalHeader().setDefaultSectionSize(91)
         self.loan_info_tableWidget.horizontalHeader().setMinimumSectionSize(49)
+        self.pay_loan_btn = QtWidgets.QPushButton(self.PLoanInfo)
+        self.pay_loan_btn.setGeometry(QtCore.QRect(520, 500, 81, 41))
+        font = QtGui.QFont()
+        font.setPointSize(13)
+        self.pay_loan_btn.setFont(font)
+        self.pay_loan_btn.setObjectName("pay_loan_btn")
+        self.pay_loan_input = QtWidgets.QLineEdit(self.PLoanInfo)
+        self.pay_loan_input.setGeometry(QtCore.QRect(240, 510, 131, 31))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.pay_loan_input.setFont(font)
+        self.pay_loan_input.setObjectName("pay_loan_input")
+        self.label_8 = QtWidgets.QLabel(self.PLoanInfo)
+        self.label_8.setGeometry(QtCore.QRect(30, 500, 91, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label_8.setFont(font)
+        self.label_8.setObjectName("label_8")
+        self.label_9 = QtWidgets.QLabel(self.PLoanInfo)
+        self.label_9.setGeometry(QtCore.QRect(30, 425, 561, 41))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.label_9.setFont(font)
+        self.label_9.setObjectName("label_9")
         self.operations_stackedWidget.addWidget(self.PLoanInfo)
         self.line_2 = QtWidgets.QFrame(self.operation_screen)
         self.line_2.setGeometry(QtCore.QRect(10, 60, 20, 551))
@@ -1018,7 +1047,7 @@ class Ui_CustomerWindow(object):
         self.operations_list.setFrameShadow(QtWidgets.QFrame.Raised)
         self.operations_list.setObjectName("operations_list")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.operations_list)
-        self.verticalLayout.setContentsMargins(35, 44, 0, 105)
+        self.verticalLayout.setContentsMargins(35, 44, 0, 66)
         self.verticalLayout.setSpacing(20)
         self.verticalLayout.setObjectName("verticalLayout")
         self.listAccounts_radio = QtWidgets.QRadioButton(self.operations_list)
@@ -1237,7 +1266,7 @@ class Ui_CustomerWindow(object):
 
         self.retranslateUi(CustomerWindow)
         self.info_header_stackedWidgets.setCurrentIndex(0)
-        self.operations_stackedWidget.setCurrentIndex(4)
+        self.operations_stackedWidget.setCurrentIndex(9)
         QtCore.QMetaObject.connectSlotsByName(CustomerWindow)
 
     def retranslateUi(self, CustomerWindow):
@@ -1380,80 +1409,48 @@ class Ui_CustomerWindow(object):
         item = self.tableWidget.verticalHeaderItem(0)
         item.setText(_translate("CustomerWindow", "1"))
         item = self.tableWidget.horizontalHeaderItem(0)
-        item.setText(_translate("CustomerWindow", "No"))
-        item = self.tableWidget.horizontalHeaderItem(1)
         item.setText(_translate("CustomerWindow", "Date"))
-        item = self.tableWidget.horizontalHeaderItem(2)
+        item = self.tableWidget.horizontalHeaderItem(1)
         item.setText(_translate("CustomerWindow", "Source"))
-        item = self.tableWidget.horizontalHeaderItem(3)
+        item = self.tableWidget.horizontalHeaderItem(2)
         item.setText(_translate("CustomerWindow", "Receive"))
-        item = self.tableWidget.horizontalHeaderItem(4)
+        item = self.tableWidget.horizontalHeaderItem(3)
         item.setText(_translate("CustomerWindow", "Type"))
-        item = self.tableWidget.horizontalHeaderItem(5)
+        item = self.tableWidget.horizontalHeaderItem(4)
         item.setText(_translate("CustomerWindow", "Total"))
         __sortingEnabled = self.tableWidget.isSortingEnabled()
         self.tableWidget.setSortingEnabled(False)
-        item = self.tableWidget.item(0, 0)
-        item.setText(_translate("CustomerWindow", "1"))
-        item = self.tableWidget.item(0, 1)
-        item.setText(_translate("CustomerWindow", "13-12-2020"))
-        item = self.tableWidget.item(0, 2)
-        item.setText(_translate("CustomerWindow", "account 901"))
-        item = self.tableWidget.item(0, 3)
-        item.setText(_translate("CustomerWindow", "kullanci 302"))
-        item = self.tableWidget.item(0, 4)
-        item.setText(_translate("CustomerWindow", "Withdraw"))
-        item = self.tableWidget.item(0, 5)
-        item.setText(_translate("CustomerWindow", "2300"))
         self.tableWidget.setSortingEnabled(__sortingEnabled)
-        self.email_textEdit.setMarkdown(_translate("CustomerWindow", "k@email.com\n"
-"\n"
-""))
         self.email_textEdit.setHtml(_translate("CustomerWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:7.8pt;\">k@email.com</span></p></body></html>"))
-        self.TC_textEdit.setMarkdown(_translate("CustomerWindow", "99865998757\n"
-"\n"
-""))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.TC_textEdit.setHtml(_translate("CustomerWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:7.8pt;\">99865998757</span></p></body></html>"))
-        self.FN_textEdit.setMarkdown(_translate("CustomerWindow", "James\n"
-"\n"
-""))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.FN_textEdit.setHtml(_translate("CustomerWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:7.8pt;\">James</span></p></body></html>"))
-        self.LN_textEdit.setMarkdown(_translate("CustomerWindow", " Smith\n"
-"\n"
-""))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.LN_textEdit.setHtml(_translate("CustomerWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:7.8pt;\"> Smith</span></p></body></html>"))
-        self.phoneNum_textEdit.setMarkdown(_translate("CustomerWindow", "5689457885\n"
-"\n"
-""))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.phoneNum_textEdit.setHtml(_translate("CustomerWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:7.8pt;\">5689457885</span></p></body></html>"))
-        self.Address_textEdit.setMarkdown(_translate("CustomerWindow", "A City B street N Blok\n"
-"\n"
-""))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.Address_textEdit.setHtml(_translate("CustomerWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:7.8pt;\">A City B street N Blok</span></p></body></html>"))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.edit_save_button.setText(_translate("CustomerWindow", "Update"))
         self.label.setText(_translate("CustomerWindow", "First Name"))
         self.label_2.setText(_translate("CustomerWindow", "Last Name"))
@@ -1462,7 +1459,6 @@ class Ui_CustomerWindow(object):
         self.label_5.setText(_translate("CustomerWindow", "Email"))
         self.label_6.setText(_translate("CustomerWindow", "Address"))
         self.loan_label.setText(_translate("CustomerWindow", "LOAN: "))
-        self.loan_value_label.setText(_translate("CustomerWindow", "5000000"))
         item = self.loan_info_tableWidget.verticalHeaderItem(0)
         item.setText(_translate("CustomerWindow", "1"))
         item = self.loan_info_tableWidget.horizontalHeaderItem(0)
@@ -1477,6 +1473,12 @@ class Ui_CustomerWindow(object):
         item.setText(_translate("CustomerWindow", "Payment"))
         item = self.loan_info_tableWidget.horizontalHeaderItem(5)
         item.setText(_translate("CustomerWindow", "Paid"))
+        item = self.loan_info_tableWidget.horizontalHeaderItem(6)
+        item.setText(_translate("CustomerWindow", "Left"))
+        self.pay_loan_btn.setText(_translate("CustomerWindow", "Pay"))
+        self.pay_loan_input.setPlaceholderText(_translate("CustomerWindow", "input amount "))
+        self.label_8.setText(_translate("CustomerWindow", "Pay loan"))
+        self.label_9.setText(_translate("CustomerWindow", "Note that money will be withdrown from your TL account if exists"))
         self.listAccounts_radio.setText(_translate("CustomerWindow", "List Accounts"))
         self.moneyTransfer_radio.setText(_translate("CustomerWindow", "Money Transfer"))
         self.withdraw_radio.setText(_translate("CustomerWindow", "Withdraw"))

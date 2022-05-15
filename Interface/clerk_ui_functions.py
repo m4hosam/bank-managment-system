@@ -208,7 +208,6 @@ class clerk_Window:
         cus_id = self.ui.customer_comboBox.currentText()
         self.ui.finances_table.setRowCount(0)
         self.ui.finances_table.setRowCount(50)
-        row = 0
         # clerk_id = 3
         incomeQuery = f'''SELECT t1.cus_id, SUM(ISNULL(t1.income, 0) + ISNULL(t2.income,0))
                         FROM (SELECT ua2.cus_id , SUM(total * c1.exch_rate) income
@@ -234,16 +233,12 @@ class clerk_Window:
                         GROUP BY(t1.cus_id) ORDER BY t1.cus_id;'''
         cursor.execute(incomeQuery)
 
-        for i in cursor:
-            self.ui.finances_table.setItem(
-                row, 0, QtWidgets.QTableWidgetItem(str(i[0])))
-            self.ui.finances_table.setItem(
-                row, 1, QtWidgets.QTableWidgetItem(str(i[1])))
-            row += 1
+        self.ui.finances_table.setItem(
+            0, 0, QtWidgets.QTableWidgetItem(str(cus_id)))
+        self.ui.finances_table.setItem(
+            0, 1, QtWidgets.QTableWidgetItem("income"))
 
-        row = 0
-
-        expenseQuery = f'''SELECT DISTINCT ua.cus_id, SUM(total * ISNULL(exch_rate,1))
+        expenseQuery = f'''SELECT DISTINCT ua.cus_id, SUM(total * ISNULL(exch_rate,1)) expense
                         FROM transactions2 tr, currency curr, account2 a, userAccounts2 ua
                         WHERE ua.acc_id = tr.src_id and
                         tr.src_id = a.acc_id and
@@ -255,15 +250,13 @@ class clerk_Window:
                         GROUP BY(ua.cus_id) ORDER BY ua.cus_id'''
 
         cursor.execute(expenseQuery)
-
-        for i in cursor:
-            k = self.ui.finances_table.item(row, 0)
-            if k and str(i[0]) == k.text():
-                self.ui.finances_table.setItem(
-                    row, 2, QtWidgets.QTableWidgetItem(str(i[1])))
-            row += 1
-
-        row = 0
+        row = cursor.fetchone()
+        if row:
+            self.ui.finances_table.setItem(
+                0, 2, QtWidgets.QTableWidgetItem(str(row.expense)))
+        else:
+            self.ui.finances_table.setItem(
+                0, 2, QtWidgets.QTableWidgetItem("0"))
 
         totalBalanceQuery = f'''SELECT c.id, SUM(exch_rate * balance)  as totalBalance
                             FROM currency cur, userAccounts2 ua, account2 a, customer2 c
@@ -274,12 +267,13 @@ class clerk_Window:
                             GROUP BY(c.id) ORDER BY c.id'''
         cursor.execute(totalBalanceQuery)
 
-        for i in cursor:
-            j = self.ui.finances_table.item(row, 0)
-            if j and (str(i[0]) == j.text()):
-                self.ui.finances_table.setItem(
-                    row, 3, QtWidgets.QTableWidgetItem(str(i[1])))
-            row += 1
+        row = cursor.fetchone()
+        if row:
+            self.ui.finances_table.setItem(
+                0, 3, QtWidgets.QTableWidgetItem(str(row.totalBalance)))
+        else:
+            self.ui.finances_table.setItem(
+                0, 3, QtWidgets.QTableWidgetItem("0"))
 
     def displayCustomerRequests(self):
         self.ui.customerRequests_table.setRowCount(0)
