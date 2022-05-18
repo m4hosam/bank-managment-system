@@ -208,35 +208,27 @@ class clerk_Window:
         cus_id = self.ui.customer_comboBox.currentText()
         self.ui.finances_table.setRowCount(0)
         self.ui.finances_table.setRowCount(50)
-        # clerk_id = 3
-        incomeQuery = f'''SELECT t1.cus_id, SUM(ISNULL(t1.income, 0) + ISNULL(t2.income,0))
-                        FROM (SELECT ua2.cus_id , SUM(total * c1.exch_rate) income
-                        FROM transactions2 tr, account2 a1, account2 a2, userAccounts2 ua1, userAccounts2 ua2, currency c1, currency c2
-                        WHERE tr.src_id = a1.acc_id and
-                        tr.rsv_id = a2.acc_id and
-                        ua1.acc_id = src_id and
-                        ua2.acc_id = rsv_id and
-                        c1.curr_code = a1.currency and 
-                        c2.curr_code = a2.currency and src_id not in(SELECT acc_id
-                        FROM userAccounts2 ua
-                        WHERE ua.cus_id = ua2.cus_id)
-                        GROUP BY(ua2.cus_id)) t1
-                        FULL OUTER JOIN (
-                        SELECT ua1.cus_id, SUM(total * c1.exch_rate) income
-                        FROM transactions2 tr, account2 a1, userAccounts2 ua1, currency c1
-                        WHERE src_id IS NULL and
-                        rsv_id = ua1.acc_id and
-                        ua1.acc_id = a1.acc_id and
-                        a1.currency = c1.curr_code
-                        GROUP BY(ua1.cus_id)) t2 on t2.cus_id = t1.cus_id, customerClerks2 cc
-                        WHERE t1.cus_id = cc.cus_id and t1.cus_id = {cus_id}
-                        GROUP BY(t1.cus_id) ORDER BY t1.cus_id;'''
-        cursor.execute(incomeQuery)
-
         self.ui.finances_table.setItem(
             0, 0, QtWidgets.QTableWidgetItem(str(cus_id)))
-        self.ui.finances_table.setItem(
-            0, 1, QtWidgets.QTableWidgetItem("income"))
+        # clerk_id = 3
+        incomeQuery = f'''SELECT sum(total*exch_rate) income
+                        FROM userAccounts2 us , transactions2, account2, currency
+                        WHERE us.cus_id = {cus_id}
+                        and transactions2.rsv_id = us.acc_id   
+                        and account2.acc_id = us.acc_id
+                        and currency.curr_code = account2.currency
+                        and ISNULL(transactions2.src_id, 0) NOT IN(
+                                    SELECT acc_id 
+                                    FROM userAccounts2 
+                                    WHERE cus_id = {cus_id})'''
+        cursor.execute(incomeQuery)
+        row = cursor.fetchone()
+        if row:
+            self.ui.finances_table.setItem(
+                0, 1, QtWidgets.QTableWidgetItem(str(row.income)))
+        else:
+            self.ui.finances_table.setItem(
+                0, 1, QtWidgets.QTableWidgetItem("0"))
 
         expenseQuery = f'''SELECT DISTINCT ua.cus_id, SUM(total * ISNULL(exch_rate,1)) expense
                         FROM transactions2 tr, currency curr, account2 a, userAccounts2 ua
